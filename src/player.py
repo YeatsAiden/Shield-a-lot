@@ -1,7 +1,8 @@
 import pygame as pg
 import math
+
 from .entity import Entity
-from . import common
+from . import common, settings
 
 class Player(Entity):
     def __init__(self, image: pg.Surface, pos) -> None:
@@ -23,11 +24,23 @@ class Player(Entity):
        self.move() 
        self.flip_image()
        self.oscillate()
+       self.restrict_pos()
 
     def move(self):
         self.velocity.x, self.velocity.y = 0, 0
         self.velocity += self.speed * self.direction * common.DT
         self.pos += self.velocity
+
+    def restrict_pos(self):
+        if self.pos[0] > settings.DISPLAY_SIZE[0]:
+            self.pos[0] = settings.DISPLAY_SIZE[0]
+        elif self.pos[0] < 0:
+            self.pos[0] = 0
+
+        if self.pos[1] > settings.DISPLAY_SIZE[1]:
+            self.pos[1] = settings.DISPLAY_SIZE[1]
+        elif self.pos[1] < 0:
+            self.pos[1] = 0
 
     def oscillate(self):
         if self.velocity.x or self.velocity.y:

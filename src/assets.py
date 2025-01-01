@@ -1,8 +1,6 @@
 from os.path import isfile
 import pygame as pg
 import os, json
-
-from pygame.cursors import arrow
 from . import common
 
 images = {}
@@ -33,10 +31,10 @@ def load_assets():
             "arrow": load_image("arrow"),
             "bar": load_image("bar"),
             "charge": load_image("charge"),
-            "grass": load_sprite_sheet("grass"),
-            "button": load_sprite_sheet("button"),
             "player": load_image("player"),
-            "rocket": load_sprite_sheet("rocket"),
             "shield": load_image("shield"),
+            "button": load_sprite_sheet("button"),
+            "rocket": load_sprite_sheet("rocket"),
+            "grass": load_sprite_sheet("grass"),
         }
     )

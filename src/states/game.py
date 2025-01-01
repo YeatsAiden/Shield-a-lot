@@ -7,7 +7,7 @@ from ..display import Display
 from ..player import Player
 from ..shield import Shield 
 from ..bar import Bar
-from ..wave import Arrow, Rocket
+from ..wave import Rocket
 
 
 class Game(State):

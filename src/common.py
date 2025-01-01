@@ -1,5 +1,5 @@
 import pygame as pg
-import os
+import os, random
 
 EVENTS: list[pg.Event] = []
 MOUSE_POSITION: list[int]
@@ -20,3 +20,19 @@ def rotate(surface: pg.Surface, angle: float, size: float, pivot, offset):
     rotated_offset = offset.rotate(-angle)
     rect = rotated_image.get_rect(center=pivot+rotated_offset)
     return rotated_image, rect
+
+def generate_random_position_out_of_area(area: list[int], offset: int):
+    random_position = [random.randint(0, area[0]), random.randint(0, area[1])]
+
+    to_right = random_position[0] > area[0]/2
+    to_bottom = random_position[1] > area[1]/2
+
+    min_dist_x = area[0] - random_position[0] if to_right else random_position[0]
+    min_dist_y = area[1] - random_position[1] if to_bottom else random_position[1]
+
+    if min_dist_x > min_dist_y:
+        random_position[1] = -offset if to_bottom else area[1] + offset
+    else:
+        random_position[0] = -offset if to_right else area[0] + offset
+    
+    return random_position

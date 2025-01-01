@@ -1,5 +1,4 @@
 import pygame as pg
-import functools
 
 
 class Entity:
@@ -25,11 +24,20 @@ class Entity:
         pass
 
     def add_outline(self, condition: bool):
-        if condition and not self.outline:
+        if condition:
             self.outline = True
-            self.image = pg.Surface((self.original_image.width, self.original_image.height))
-        else:
+            self.image = pg.Surface((self.original_image.width + 2, self.original_image.height + 2))
+            self.image.set_colorkey((0, 0, 0))
+            mask_surf = self.mask.to_surface(setcolor= (255, 255, 255))
+            mask_surf.set_colorkey((0, 0, 0))
+            self.image.blit(mask_surf, (1, 0))
+            self.image.blit(mask_surf, (1, 2))
+            self.image.blit(mask_surf, (0, 1))
+            self.image.blit(mask_surf, (2, 1))
+            self.image.blit(self.original_image, (1, 1))
+        elif not condition:
             self.outline = False
+            self.image = self.original_image
 
 
 class Group:
