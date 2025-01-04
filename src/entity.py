@@ -1,10 +1,17 @@
 import pygame as pg
+from . import assets
 
 
 class Entity:
-    def __init__(self, image: pg.Surface, pos, angle: float = 0, flags: int = 0) -> None:
-        self.image = image
-        self.original_image = image
+    def __init__(self, image: pg.Surface | assets.SpriteSheet, pos, angle: float = 0, flags: int = 0) -> None:
+        if isinstance(image, assets.SpriteSheet):
+            self.sprite_sheet = image
+            self.image = image.images[f"{image.index}"]
+            self.original_image = self.image
+        else:
+            self.image = image
+            self.original_image = self.image
+
         self.mask: pg.Mask = pg.mask.from_surface(self.image)
 
         self.pos = pos
@@ -14,19 +21,17 @@ class Entity:
         self.flags = flags
         self.outline = False
 
-        self.is_hit = False
-
         self.group: set["Group"] = set()
 
     def update(self, *args, **kwargs):
         pass
 
-    def add_outline(self, condition: bool):
+    def add_outline(self, condition: bool, color):
         if condition and not self.outline:
             self.outline = True
             self.image = pg.Surface((self.original_image.width + 2, self.original_image.height + 2))
             self.image.set_colorkey((0, 0, 0))
-            mask_surf = self.mask.to_surface(setcolor= (255, 255, 255))
+            mask_surf = self.mask.to_surface(setcolor=color)
             mask_surf.set_colorkey((0, 0, 0))
             self.image.blit(mask_surf, (1, 0))
             self.image.blit(mask_surf, (1, 2))

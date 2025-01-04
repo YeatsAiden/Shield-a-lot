@@ -7,19 +7,14 @@ from . import common
 class Button(Entity):
     command: typing.Callable = staticmethod(lambda: None)
 
-    def __init__(self, idle_image: pg.Surface, focused_image: pg.Surface, pressed_image: pg.Surface, pos, command: typing.Callable) -> None:
-        super().__init__(idle_image, pos)
-        self.image = idle_image
+    def __init__(self, image, pos, command: typing.Callable) -> None:
+        super().__init__(image, pos)
         self.rect = self.image.get_frect(center=pos)
 
         self.command: typing.Callable = command
 
         self.focused: bool = False
         self.clicked: bool = False
-
-        self.idle_image = idle_image
-        self.focused_image = focused_image
-        self.pressed_image = pressed_image
         
     def update(self):
         self.focused = True if self.rect.collidepoint(common.MOUSE_POSITION) else False
@@ -32,11 +27,11 @@ class Button(Entity):
                 self.command()
         
         if self.focused:
-            self.image = self.focused_image
+            self.image = self.sprite_sheet.get_image(1)
         else:
-            self.image = self.idle_image
+            self.image = self.sprite_sheet.get_image(0)
         if self.clicked:
-            self.image = self.pressed_image
+            self.image = self.sprite_sheet.get_image(2)
 
 
 class Font:

@@ -28,14 +28,14 @@ class Game(State):
 
         self.charge_bar = Bar(assets.images["bar"], assets.images["charge"], [8, 4])
 
-        self.wave = WaveManager(20)
+        self.wave = WaveManager()
 
         # All entities
         self.all_entities = Group()
 
         self.grass = Group()
         for _ in range(random.randint(3, 5)):
-            self.grass.add(Entity(assets.images["grass"][random.randint(0, 2)], (random.randint(10, 54), random.randint(10, 54))))
+            self.grass.add(Entity(assets.images["grass"].images[f"{random.randint(0, 2)}"], (random.randint(10, 54), random.randint(10, 54))))
 
         self.all_entities.add(self.grass)
         self.all_entities.add(self.charge_bar)

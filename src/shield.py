@@ -17,7 +17,7 @@ class Shield(Entity):
         self.min_radius = 0
 
         self.relative_position = pg.Vector2(4, 0) 
-        self.velocity = pg.Vector2(60, 0) 
+        self.velocity = pg.Vector2(70, 0) 
 
         self.flip_vertical = False
 

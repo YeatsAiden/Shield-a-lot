@@ -4,7 +4,7 @@ from .game import Game
 from .. import assets
 from ..ui import Button 
 from ..entity import Group
-from ..display import Display, common
+from ..display import Display
 
 
 class MainMenu(State):
@@ -14,16 +14,12 @@ class MainMenu(State):
         self.display = display
 
         self.play = Button(
-                assets.images["button"][0],
-                assets.images["button"][1],
-                assets.images["button"][2],
+                assets.images["button"],
                 (21, 21),
                 lambda: setattr(self, "next_state", Game)
             )
         self.quit = Button(
-                assets.images["button"][0],
-                assets.images["button"][1],
-                assets.images["button"][2],
+                assets.images["button"],
                 (21, 42),
                 lambda: setattr(self, "done", True)
             )

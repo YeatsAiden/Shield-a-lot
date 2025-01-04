@@ -4,8 +4,19 @@ from .entity import Entity, Group
 from . import common, assets, settings
 
 
-class Rocket(Entity):
+class Projectile(Entity):
     def __init__(self, image: pg.Surface, pos, angle: float = 0, flags: int = 0) -> None:
+        super().__init__(image, pos, angle, flags)
+        self.is_hit = False
+        self.speed: int
+        self.velocity: pg.Vector2
+
+    def hit(self):
+        pass
+
+
+class Rocket(Projectile):
+    def __init__(self, image: pg.Surface, pos, angle: float = 0) -> None:
         super().__init__(image, pos, angle)
         self.speed = 80
         self.velocity = pg.Vector2(0, 0)
@@ -14,6 +25,7 @@ class Rocket(Entity):
 
     def update(self, *args, **kwargs):
         self.move()
+        self.animate()
 
     def move(self):
         self.velocity.x, self.velocity.y = 0, 0 
@@ -22,6 +34,9 @@ class Rocket(Entity):
         self.rect.topleft += rotated_velocity
         self.pos = self.rect.center
 
+    def animate(self):
+        self.image = self.sprite_sheet.next_image()
+
     def hit(self):
         if not self.is_hit:
             self.is_hit = True
@@ -29,7 +44,7 @@ class Rocket(Entity):
 
 
 class WaveManager(Group):
-    def __init__(self, time_per_wave: int) -> None:
+    def __init__(self) -> None:
         super().__init__()
 
         self.projectiles = {"rocket": Rocket}
@@ -40,8 +55,8 @@ class WaveManager(Group):
         self.angle_deviation = self.current_wave["angle_deviation"]
 
         # Sub_wave specific info
-        self.sub_wave_id = 0
-        self.current_sub_wave = self.current_wave["sub_waves"][self.sub_wave_id]
+        self.sub_wave_index = 0
+        self.current_sub_wave = self.current_wave["sub_waves"][self.sub_wave_index]
         self.spawn_clock = self.current_sub_wave["spawn_clock"]
         self.projectile_types = self.current_sub_wave["types"]
         self.amount = self.current_sub_wave["amount"]
@@ -70,7 +85,7 @@ class WaveManager(Group):
 
     def decide_projectile(self, pos, angle):
         projectile_type = random.choice(self.projectile_types)
-        return self.projectiles[projectile_type](assets.images[projectile_type][0], pos, angle)
+        return self.projectiles[projectile_type](assets.images[projectile_type], pos, angle)
 
     def spawn_projectiles(self, player_pos):
         for _ in range(self.amount):
