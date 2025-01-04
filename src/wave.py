@@ -1,14 +1,16 @@
 import pygame as pg
-import random, math
+import random
 from .entity import Entity, Group
 from . import common, assets, settings
 
 
 class Rocket(Entity):
-    def __init__(self, image: pg.Surface, pos, angle: int = 0, flags: int = 0) -> None:
+    def __init__(self, image: pg.Surface, pos, angle: float = 0, flags: int = 0) -> None:
         super().__init__(image, pos, angle)
-        self.speed = 70 
+        self.speed = 80
         self.velocity = pg.Vector2(0, 0)
+
+        self.is_hit = False
 
     def update(self, *args, **kwargs):
         self.move()
@@ -17,36 +19,63 @@ class Rocket(Entity):
         self.velocity.x, self.velocity.y = 0, 0 
         self.velocity.x += self.speed * common.DT
         rotated_velocity =  self.velocity.rotate(-self.angle)
-        self.pos += rotated_velocity
+        self.rect.topleft += rotated_velocity
+        self.pos = self.rect.center
+
+    def hit(self):
+        if not self.is_hit:
+            self.is_hit = True
+            self.angle += 180
 
 
 class WaveManager(Group):
     def __init__(self, time_per_wave: int) -> None:
         super().__init__()
-        self.time_per_wave = time_per_wave
-        self.difficulty = 0
-        self.projectiles = [Rocket]
-        self.projectile_images = ["rocket"]
-        self.spawn_clock = random.random() + random.random()
+
+        self.projectiles = {"rocket": Rocket}
+
+        # Wave specific information
+        self.wave_id = 0
+        self.current_wave = assets.data[f"wave_{self.wave_id}"]
+        self.angle_deviation = self.current_wave["angle_deviation"]
+
+        # Sub_wave specific info
+        self.sub_wave_id = 0
+        self.current_sub_wave = self.current_wave["sub_waves"][self.sub_wave_id]
+        self.spawn_clock = self.current_sub_wave["spawn_clock"]
+        self.projectile_types = self.current_sub_wave["types"]
+        self.amount = self.current_sub_wave["amount"]
+
 
     def update(self, *args, **kwargs):
         player_pos = kwargs["player_pos"]
-        angle_to_player = -math.degrees(math.atan2(player_pos[1], player_pos[0]))
+        shield_rect = kwargs["shield_rect"]
+        shield_mask = kwargs["shield_mask"]
+        swinging = kwargs["swinging"]
 
         if self.tick():
-            for i in range(random.randint(1, 3)):
-                random_projectile = random.randint(0, self.difficulty)
-                random_position = common.generate_random_position_out_of_area(settings.DISPLAY_SIZE, 20)
-                self.add(self.projectiles[random_projectile](assets.images[self.projectile_images[random_projectile]], random_position))
+            self.spawn_projectiles(player_pos)
 
         for projectile in self.entities:
             projectile.update()
+            if projectile.mask.overlap(shield_mask, ((shield_rect.x - projectile.rect.left) * common.SCALE, (shield_rect.y - projectile.rect.top) * common.SCALE)) and swinging:
+                projectile.hit()
 
     def tick(self):
         self.spawn_clock -= common.DT
-        if self.spawn_clock <= 0:
-            self.spawn_clock = random.random() + random.random()
+        if self.spawn_clock <= 0 and not len(self.entities):
             return True
         else:
             return False
-            
+
+    def decide_projectile(self, pos, angle):
+        projectile_type = random.choice(self.projectile_types)
+        return self.projectiles[projectile_type](assets.images[projectile_type][0], pos, angle)
+
+    def spawn_projectiles(self, player_pos):
+        for _ in range(self.amount):
+            random_position = common.generate_random_position_out_of_area(settings.DISPLAY_SIZE, random.randint(20, 300))
+            angle_to_player = common.angle_to(random_position, player_pos) + random.randint(-self.angle_deviation, self.angle_deviation)
+            projectile = self.decide_projectile(random_position, angle_to_player)
+            self.add(projectile)
+

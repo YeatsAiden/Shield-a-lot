@@ -7,7 +7,7 @@ from ..display import Display
 from ..player import Player
 from ..shield import Shield 
 from ..bar import Bar
-from ..wave import Rocket
+from ..wave import Rocket, WaveManager
 
 
 class Game(State):
@@ -28,7 +28,7 @@ class Game(State):
 
         self.charge_bar = Bar(assets.images["bar"], assets.images["charge"], [8, 4])
 
-        self.rocket = Rocket(assets.images["rocket"][0], [0, 0], -math.degrees(math.atan2(self.player.rect.y, self.player.rect.x)))
+        self.wave = WaveManager(20)
 
         # All entities
         self.all_entities = Group()
@@ -41,7 +41,6 @@ class Game(State):
         self.all_entities.add(self.charge_bar)
         self.all_entities.add(self.player)
         self.all_entities.add(self.shield)
-        self.all_entities.add(self.rocket)
 
     def update(self):
         # Resets screen
@@ -49,13 +48,14 @@ class Game(State):
         self.display.display.fill(self.bg_color)
 
         # Updating player
-        self.all_entities.update(player_pos = self.player.pos, charge = self.shield.charge)
+        self.all_entities.update(player_pos= self.player.pos, charge= self.shield.charge)
+        self.wave.update(player_pos= self.player.pos, shield_rect= self.shield.rect, shield_mask= self.shield.mask, swinging= self.shield.swing,)
 
         # Add entities to display buffer
         self.display.add(self.grass)
         self.display.add(self.player)
         self.display.add(self.shield)
-        self.display.add(self.rocket)
+        self.display.add(self.wave)
         self.display.add(self.charge_bar)
 
         if self.frame == 60:

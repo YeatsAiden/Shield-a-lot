@@ -4,6 +4,7 @@ import os, json
 from . import common
 
 images = {}
+data = {}
 
 def load_image(path: str, extention: str = "png"):
     return pg.image.load(f"{common.WORKING_DIRECTORY}assets/images/{path}/{path}.{extention}")
@@ -25,6 +26,11 @@ def load_sprite_sheet(path: str, extention: str = "json"):
     else:
         return image
 
+def load_json(path: str, extention: str = "json"):
+    with open(f"{common.WORKING_DIRECTORY}assets/json/{path}.{extention}", "r") as file:
+        data = json.load(file)
+        return data
+
 def load_assets():
     images.update(
         {
@@ -36,5 +42,10 @@ def load_assets():
             "button": load_sprite_sheet("button"),
             "rocket": load_sprite_sheet("rocket"),
             "grass": load_sprite_sheet("grass"),
+        }
+    )
+    data.update(
+        {
+            "wave_0": load_json("wave_0"),
         }
     )

@@ -1,0 +1,15 @@
+{
+  "sub_waves": [
+    {
+      "types": ["rocket"],
+      "spawn_clock": 3,
+      "amount": 2
+    },
+    {
+      "types": ["rocket"],
+      "spawn_clock": 1,
+      "amount": 5
+    }
+  ],
+  "angle_deviation": 3
+}

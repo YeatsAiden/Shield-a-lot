@@ -14,7 +14,7 @@ class Shield(Entity):
 
         self.angle = 0
         self.max_radius = 2.5
-        self.min_radius = 0.5
+        self.min_radius = 0
 
         self.relative_position = pg.Vector2(4, 0) 
         self.velocity = pg.Vector2(60, 0) 
@@ -33,12 +33,12 @@ class Shield(Entity):
         self.charge_shield()
 
     def follow(self, pos):
-        self.pos = pos
-        self.angle = self.angle_to_mouse()
+        self.angle = common.angle_to(pos, common.MOUSE_POSITION)
         temp_rotated_vel = self.velocity.rotate(-self.angle)
         self.relative_position += temp_rotated_vel * common.DT
         self.relative_position = self.relative_position.clamp_magnitude(self.min_radius, self.max_radius + math.sin(self.frame * 20) * 2000 * common.DT)
-        self.pos = pos + self.relative_position
+        self.rect.center = pos + self.relative_position
+        self.pos = self.rect.center
 
     def flip_image(self):
         if self.angle > 90 or self.angle < -90:
@@ -47,9 +47,6 @@ class Shield(Entity):
             self.flip_vertical = False
         
         self.image = pg.transform.flip(self.original_image, False, self.flip_vertical)
-
-    def angle_to_mouse(self):
-        return -math.degrees(math.atan2(common.MOUSE_POSITION[1] - self.pos[1], common.MOUSE_POSITION[0] - self.pos[0]))
 
     def slap(self):
         mouse_pressed = pg.mouse.get_pressed()

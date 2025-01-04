@@ -2,21 +2,19 @@ import pygame as pg
 
 
 class Entity:
-    def __init__(self, image: pg.Surface, pos, angle: float = 0, rotates: bool = False, flags: int = 0) -> None:
+    def __init__(self, image: pg.Surface, pos, angle: float = 0, flags: int = 0) -> None:
         self.image = image
         self.original_image = image
+        self.mask: pg.Mask = pg.mask.from_surface(self.image)
 
         self.pos = pos
         self.rect: pg.FRect | pg.Rect = self.image.get_frect(center = self.pos)
 
-        self.mask: pg.Mask = pg.mask.from_surface(self.image)
-
         self.angle = angle
-        self.rotates = rotates
-
         self.flags = flags
-
         self.outline = False
+
+        self.is_hit = False
 
         self.group: set["Group"] = set()
 
@@ -24,7 +22,7 @@ class Entity:
         pass
 
     def add_outline(self, condition: bool):
-        if condition:
+        if condition and not self.outline:
             self.outline = True
             self.image = pg.Surface((self.original_image.width + 2, self.original_image.height + 2))
             self.image.set_colorkey((0, 0, 0))
@@ -38,6 +36,9 @@ class Entity:
         elif not condition:
             self.outline = False
             self.image = self.original_image
+
+    def hit(self):
+        pass
 
 
 class Group:

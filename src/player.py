@@ -12,7 +12,7 @@ class Player(Entity):
 
         self.direction = pg.Vector2(0, 0)
         self.velocity = pg.Vector2(0, 0) 
-        self.speed = 20
+        self.speed = 10
 
         self.frame = 0
         self.wobble = False
@@ -29,18 +29,19 @@ class Player(Entity):
     def move(self):
         self.velocity.x, self.velocity.y = 0, 0
         self.velocity += self.speed * self.direction * common.DT
-        self.pos += self.velocity
+        self.rect.topleft += self.velocity
+        self.pos = self.rect.center
 
     def restrict_pos(self):
-        if self.pos[0] > settings.DISPLAY_SIZE[0]:
-            self.pos[0] = settings.DISPLAY_SIZE[0]
-        elif self.pos[0] < 0:
-            self.pos[0] = 0
+        if self.rect.right > settings.DISPLAY_SIZE[0]:
+            self.rect.right = settings.DISPLAY_SIZE[0]
+        elif self.rect.x < 0:
+            self.rect.x = 0
 
-        if self.pos[1] > settings.DISPLAY_SIZE[1]:
-            self.pos[1] = settings.DISPLAY_SIZE[1]
-        elif self.pos[1] < 0:
-            self.pos[1] = 0
+        if self.rect.bottom > settings.DISPLAY_SIZE[1]:
+            self.rect.bottom = settings.DISPLAY_SIZE[1]
+        elif self.rect.y < 0:
+            self.rect.y = 0
 
     def oscillate(self):
         if self.velocity.x or self.velocity.y:
@@ -49,7 +50,7 @@ class Player(Entity):
         ocillating_angle = self.frame * 20
 
         if self.wobble:
-            self.angle += math.sin(ocillating_angle) * 300 * common.DT
+            self.angle += math.sin(ocillating_angle) * 200 * common.DT
             self.frame += common.DT
 
         if ocillating_angle > 2 * math.pi:

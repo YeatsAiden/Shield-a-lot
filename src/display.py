@@ -24,5 +24,6 @@ class Display:
     def render(self, surface: pg.Surface, entities: list["Entity"]):
         for entity in entities:
             image, rect = common.rotate(entity.image, entity.angle, common.SCALE, (entity.pos[0] * common.SCALE, entity.pos[1] * common.SCALE), pg.Vector2(0, 0))
+            entity.mask = pg.mask.from_surface(image)
             surface.blit(image, rect)
 
