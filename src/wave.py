@@ -40,6 +40,30 @@ class Arrow(Projectile):
             self.angle += 180
 
 
+class Boomerang(Projectile):
+    def __init__(self, image: pg.Surface, pos, angle: float = 0) -> None:
+        super().__init__(image, pos, angle)
+        self.speed = 30
+        self.velocity = pg.Vector2(0, 0)
+
+        self.is_hit = False
+
+    def update(self, *args, **kwargs):
+        self.move()
+
+    def move(self):
+        self.velocity.x, self.velocity.y = 0, 0 
+        self.velocity.x += self.speed * common.DT
+        rotated_velocity =  self.velocity.rotate(-self.angle)
+        self.rect.topleft += rotated_velocity
+        self.pos = self.rect.center
+
+    def hit(self):
+        if not self.is_hit:
+            self.is_hit = True
+            self.angle += 180
+
+
 class SmallBanana(Projectile):
     def __init__(self, image: pg.Surface, pos, angle: float = 0) -> None:
         super().__init__(image, pos, angle)
@@ -171,7 +195,9 @@ class WaveManager(Group):
                 "arrow": Arrow,
                 "spike": Spike,
                 "sawblade": SawBlade,
-                "rocket": Rocket
+                "rocket": Rocket,
+                "boomerang": Boomerang,
+                "large_banana": LargeBanana
                 }
 
         # Wave specific information

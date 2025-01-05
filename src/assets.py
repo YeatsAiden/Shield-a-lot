@@ -70,6 +70,7 @@ def load_assets():
             "spike": load_image("spike"),
             "large_banana": load_image("large_banana"),
             "small_banana": load_image("small_banana"),
+            "boomerang": load_image("boomerang"),
             "button": SpriteSheet("button"),
             "rocket": SpriteSheet("rocket"),
             "sawblade": SpriteSheet("sawblade"),
