@@ -21,15 +21,21 @@ class SpriteSheet:
     def __init__(self, path: str) -> None:
         self.images: dict[str, pg.Surface] = {}
         self.index = 0
+        self.animation: list[pg.Surface] = []
+        self.frame_index = 0
+        self.durations = []
 
         json_file = f"{common.WORKING_DIRECTORY}assets/images/{path}/{path}.json"
         image = load_image(path)
-
         with open(json_file, "r") as file:
             data = json.load(file)
             for key, frame in data["frames"].items():
                 x, y, w, h = frame["frame"].values()
-                self.images[f"{key}"] = common.clip_image(image, x, y, w, h)
+                _image = common.clip_image(image, x, y, w, h)
+                _duration = frame["duration"]
+                self.images[f"{key}"] = _image
+                self.durations.append(_duration)
+                self.animation.extend([_image for _ in range(int(_duration/1000*common.FPS))])
 
     def next_image(self):
         self.index += 1
@@ -37,6 +43,13 @@ class SpriteSheet:
             self.index = 0
 
         return self.images[f"{self.index}"]
+
+    def next_frame(self):
+        self.frame_index += 1
+        if self.frame_index == len(self.animation):
+            self.frame_index = 0
+
+        return self.animation[self.frame_index]
 
     def get_image(self, index: int):
         if index >= len(self.images) or index < -len(self.images):
@@ -54,8 +67,12 @@ def load_assets():
             "charge": load_image("charge"),
             "player": load_image("player"),
             "shield": load_image("shield"),
+            "spike": load_image("spike"),
+            "large_banana": load_image("large_banana"),
+            "small_banana": load_image("small_banana"),
             "button": SpriteSheet("button"),
             "rocket": SpriteSheet("rocket"),
+            "sawblade": SpriteSheet("sawblade"),
             "grass": SpriteSheet("grass"),
         }
     )

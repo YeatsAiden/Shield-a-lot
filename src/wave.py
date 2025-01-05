@@ -8,6 +8,7 @@ class Projectile(Entity):
     def __init__(self, image: pg.Surface, pos, angle: float = 0, flags: int = 0) -> None:
         super().__init__(image, pos, angle, flags)
         self.is_hit = False
+        self.entered_arena = False
         self.speed: int
         self.velocity: pg.Vector2
 
@@ -15,10 +16,129 @@ class Projectile(Entity):
         pass
 
 
+class Arrow(Projectile):
+    def __init__(self, image: pg.Surface, pos, angle: float = 0) -> None:
+        super().__init__(image, pos, angle)
+        self.speed = 30
+        self.velocity = pg.Vector2(0, 0)
+
+        self.is_hit = False
+
+    def update(self, *args, **kwargs):
+        self.move()
+
+    def move(self):
+        self.velocity.x, self.velocity.y = 0, 0 
+        self.velocity.x += self.speed * common.DT
+        rotated_velocity =  self.velocity.rotate(-self.angle)
+        self.rect.topleft += rotated_velocity
+        self.pos = self.rect.center
+
+    def hit(self):
+        if not self.is_hit:
+            self.is_hit = True
+            self.angle += 180
+
+
+class SmallBanana(Projectile):
+    def __init__(self, image: pg.Surface, pos, angle: float = 0) -> None:
+        super().__init__(image, pos, angle)
+        self.speed = 30
+        self.velocity = pg.Vector2(0, 0)
+
+        self.is_hit = False
+
+    def update(self, *args, **kwargs):
+        self.move()
+
+    def move(self):
+        self.velocity.x, self.velocity.y = 0, 0 
+        self.velocity.x += self.speed * common.DT
+        rotated_velocity =  self.velocity.rotate(-self.angle)
+        self.rect.topleft += rotated_velocity
+        self.pos = self.rect.center
+
+    def hit(self):
+        if not self.is_hit:
+            self.is_hit = True
+            self.angle += 180
+
+
+class LargeBanana(Projectile):
+    def __init__(self, image: pg.Surface, pos, angle: float = 0) -> None:
+        super().__init__(image, pos, angle)
+        self.speed = 30
+        self.velocity = pg.Vector2(0, 0)
+
+        self.is_hit = False
+
+    def update(self, *args, **kwargs):
+        self.move()
+
+    def move(self):
+        self.velocity.x, self.velocity.y = 0, 0 
+        self.velocity.x += self.speed * common.DT
+        rotated_velocity =  self.velocity.rotate(-self.angle)
+        self.rect.topleft += rotated_velocity
+        self.pos = self.rect.center
+
+    def hit(self):
+        if not self.is_hit:
+            self.is_hit = True
+            self.angle += 180
+
+
+class Spike(Projectile):
+    def __init__(self, image: pg.Surface, pos, angle: float = 0) -> None:
+        super().__init__(image, pos, angle)
+        self.speed = 30
+        self.velocity = pg.Vector2(0, 0)
+
+        self.is_hit = False
+
+    def update(self, *args, **kwargs):
+        self.move()
+
+    def move(self):
+        self.velocity.x, self.velocity.y = 0, 0 
+        self.velocity.x += self.speed * common.DT
+        rotated_velocity =  self.velocity.rotate(-self.angle)
+        self.rect.topleft += rotated_velocity
+        self.pos = self.rect.center
+
+    def hit(self):
+        if not self.is_hit:
+            self.is_hit = True
+            self.angle += 180
+
+class SawBlade(Projectile):
+    def __init__(self, image: pg.Surface, pos, angle: float = 0) -> None:
+        super().__init__(image, pos, angle)
+        self.speed = 60
+        self.velocity = pg.Vector2(0, 0)
+
+        self.is_hit = False
+
+    def update(self, *args, **kwargs):
+        self.move()
+
+    def move(self):
+        self.velocity.x, self.velocity.y = 0, 0 
+        self.velocity.x += self.speed * common.DT
+        rotated_velocity =  self.velocity.rotate(-self.angle)
+        self.rect.topleft += rotated_velocity
+        self.pos = self.rect.center
+
+    def hit(self):
+        if not self.is_hit:
+            self.is_hit = True
+            self.angle += 180
+
+
 class Rocket(Projectile):
     def __init__(self, image: pg.Surface, pos, angle: float = 0) -> None:
         super().__init__(image, pos, angle)
-        self.speed = 80
+        self.speed = 60
         self.velocity = pg.Vector2(0, 0)
 
         self.is_hit = False
@@ -35,7 +155,7 @@ class Rocket(Projectile):
         self.pos = self.rect.center
 
     def animate(self):
-        self.image = self.sprite_sheet.next_image()
+        self.image = self.sprite_sheet.next_frame()
 
     def hit(self):
         if not self.is_hit:
@@ -47,7 +167,12 @@ class WaveManager(Group):
     def __init__(self) -> None:
         super().__init__()
 
-        self.projectiles = {"rocket": Rocket}
+        self.projectiles = {
+                "arrow": Arrow,
+                "spike": Spike,
+                "sawblade": SawBlade,
+                "rocket": Rocket
+                }
 
         # Wave specific information
         self.wave_id = 0
@@ -77,7 +202,8 @@ class WaveManager(Group):
                 projectile.hit()
 
     def tick(self):
-        self.spawn_clock -= common.DT
+        if not len(self.entities):
+            self.spawn_clock -= common.DT
         if self.spawn_clock <= 0 and not len(self.entities):
             return True
         else:

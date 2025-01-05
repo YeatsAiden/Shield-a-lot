@@ -5,7 +5,7 @@
     "trimmed": false,
     "spriteSourceSize": { "x": 0, "y": 0, "w": 11, "h": 4 },
     "sourceSize": { "w": 11, "h": 4 },
-    "duration": 100
+    "duration": 300
    },
    "1": {
     "frame": { "x": 11, "y": 0, "w": 11, "h": 4 },
@@ -13,7 +13,7 @@
     "trimmed": false,
     "spriteSourceSize": { "x": 0, "y": 0, "w": 11, "h": 4 },
     "sourceSize": { "w": 11, "h": 4 },
-    "duration": 100
+    "duration": 300
    }
  },
  "meta": {

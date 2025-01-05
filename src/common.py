@@ -40,6 +40,15 @@ def generate_random_position_out_of_area(area: list[int], offset: int):
 def angle_to(pos_1, pos_2):
     return -math.degrees(math.atan2(pos_2[1] - pos_1[1], pos_2[0] - pos_1[0]))
 
-class Clock:
+class Timer:
     def __init__(self, time: float) -> None:
         self.time = time
+
+    def count_down(self):
+        self.time -= DT
+        if self.time <= 0:
+            self.time = 0
+            return True
+        else:
+            return False
+
