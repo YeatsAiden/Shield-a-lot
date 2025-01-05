@@ -21,7 +21,7 @@ class Entity:
         self.flags = flags
         self.outline = False
 
-        self.group: set["Group"] = set()
+        self.group: list["Group"] = []
 
     def update(self, *args, **kwargs):
         pass
@@ -45,7 +45,7 @@ class Entity:
 
 class Group:
     def __init__(self) -> None:
-        self.entities: set["Entity"] = set()
+        self.entities: list["Entity"] = []
 
     def update(self, *args, **kwargs):
         for entities in self.entities:
@@ -53,11 +53,11 @@ class Group:
 
     def add(self, entity: "Entity | Group"):
         if isinstance(entity, Group):
-            self.entities.update(entity.entities)
-            [e.group.add(self) for e in entity.entities]
+            self.entities.extend(entity.entities)
+            [e.group.append(self) for e in entity.entities]
         else:
-            self.entities.add(entity)
-            entity.group.add(self)
+            self.entities.append(entity)
+            entity.group.append(self)
 
     def remove(self, entity: "Entity"):
         entity.group.remove(self)

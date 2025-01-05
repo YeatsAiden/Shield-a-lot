@@ -24,17 +24,23 @@ class Projectile(Entity):
         pass
 
     def entrance_check(self):
-        if 0 < self.pos[0] < settings.DISPLAY_SIZE[0] and 0 < self.pos[1] < settings.DISPLAY_SIZE[1]:
+        if -50 < self.pos[0] < settings.DISPLAY_SIZE[0] + 50 and -50 < self.pos[1] < settings.DISPLAY_SIZE[1] + 50:
             self.entered_arena = True
+        elif self.entered_arena:
+            self.suicide()
 
     def hit(self):
         pass
+
+    def suicide(self):
+        for group in self.group:
+            group.remove(self)
 
 
 class Arrow(Projectile):
     def __init__(self, image: pg.Surface, pos, angle: float = 0) -> None:
         super().__init__(image, pos, angle)
-        self.speed = 30
+        self.speed = 40
         self.velocity = pg.Vector2(0, 0)
 
         self.is_hit = False
@@ -205,7 +211,6 @@ class WaveManager(Group):
         self.projectile_types = self.current_sub_wave["types"]
         self.amount = self.current_sub_wave["amount"]
 
-
     def update(self, *args, **kwargs):
         player_pos = kwargs["player_pos"]
         shield_rect = kwargs["shield_rect"]
@@ -214,6 +219,19 @@ class WaveManager(Group):
 
         if self.tick():
             self.spawn_projectiles(player_pos)
+            
+            if self.sub_wave_index < len(self.current_wave["sub_waves"]) - 1:
+                self.sub_wave_index += 1
+                self.next_sub_wave()
+            else:
+                self.sub_wave_index = 0
+                if f"wave_{self.wave_id + 1}" in assets.data:
+                    self.wave_id += 1
+                    self.next_wave()
+                else:
+                    # This needs to be removed in end product, will be replaced with an endless difficulty :\
+                    self.wave_id = 0
+                    self.next_wave()
 
         for projectile in self.entities:
             projectile.update()
@@ -238,4 +256,15 @@ class WaveManager(Group):
             angle_to_player = common.angle_to(random_position, player_pos) + random.randint(-self.angle_deviation, self.angle_deviation)
             projectile = self.decide_projectile(random_position, angle_to_player)
             self.add(projectile)
+
+    def next_sub_wave(self):
+        self.current_sub_wave = self.current_wave["sub_waves"][self.sub_wave_index]
+        self.spawn_clock = self.current_sub_wave["spawn_clock"]
+        self.projectile_types = self.current_sub_wave["types"]
+        self.amount = self.current_sub_wave["amount"]
+
+    def next_wave(self):
+        self.current_wave = assets.data[f"wave_{self.wave_id}"]
+        self.angle_deviation = self.current_wave["angle_deviation"]
+        self.next_sub_wave()
 
