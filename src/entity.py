@@ -42,9 +42,6 @@ class Entity:
             self.outline = False
             self.image = self.original_image
 
-    def hit(self):
-        pass
-
 
 class Group:
     def __init__(self) -> None:

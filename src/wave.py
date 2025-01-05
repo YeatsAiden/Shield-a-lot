@@ -12,6 +12,21 @@ class Projectile(Entity):
         self.speed: int
         self.velocity: pg.Vector2
 
+    def update(self, *args, **kwargs):
+        self.move()
+        self.animate()
+        self.entrance_check()
+
+    def move(self):
+        pass
+
+    def animate(self):
+        pass
+
+    def entrance_check(self):
+        if 0 < self.pos[0] < settings.DISPLAY_SIZE[0] and 0 < self.pos[1] < settings.DISPLAY_SIZE[1]:
+            self.entered_arena = True
+
     def hit(self):
         pass
 
@@ -23,9 +38,6 @@ class Arrow(Projectile):
         self.velocity = pg.Vector2(0, 0)
 
         self.is_hit = False
-
-    def update(self, *args, **kwargs):
-        self.move()
 
     def move(self):
         self.velocity.x, self.velocity.y = 0, 0 
@@ -48,9 +60,6 @@ class Boomerang(Projectile):
 
         self.is_hit = False
 
-    def update(self, *args, **kwargs):
-        self.move()
-
     def move(self):
         self.velocity.x, self.velocity.y = 0, 0 
         self.velocity.x += self.speed * common.DT
@@ -71,9 +80,6 @@ class SmallBanana(Projectile):
         self.velocity = pg.Vector2(0, 0)
 
         self.is_hit = False
-
-    def update(self, *args, **kwargs):
-        self.move()
 
     def move(self):
         self.velocity.x, self.velocity.y = 0, 0 
@@ -96,9 +102,6 @@ class LargeBanana(Projectile):
 
         self.is_hit = False
 
-    def update(self, *args, **kwargs):
-        self.move()
-
     def move(self):
         self.velocity.x, self.velocity.y = 0, 0 
         self.velocity.x += self.speed * common.DT
@@ -120,9 +123,6 @@ class Spike(Projectile):
 
         self.is_hit = False
 
-    def update(self, *args, **kwargs):
-        self.move()
-
     def move(self):
         self.velocity.x, self.velocity.y = 0, 0 
         self.velocity.x += self.speed * common.DT
@@ -142,9 +142,6 @@ class SawBlade(Projectile):
         self.velocity = pg.Vector2(0, 0)
 
         self.is_hit = False
-
-    def update(self, *args, **kwargs):
-        self.move()
 
     def move(self):
         self.velocity.x, self.velocity.y = 0, 0 
@@ -166,10 +163,6 @@ class Rocket(Projectile):
         self.velocity = pg.Vector2(0, 0)
 
         self.is_hit = False
-
-    def update(self, *args, **kwargs):
-        self.move()
-        self.animate()
 
     def move(self):
         self.velocity.x, self.velocity.y = 0, 0 
