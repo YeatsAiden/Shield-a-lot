@@ -1,4 +1,5 @@
 import pygame as pg
+
 import json
 from . import common
 

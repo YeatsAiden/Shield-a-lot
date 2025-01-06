@@ -1,6 +1,6 @@
 import pygame as pg
-import math
 
+import math
 from .entity import Entity
 from . import common, settings
 

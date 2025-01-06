@@ -1,4 +1,5 @@
 import pygame as pg
+
 from . import common
 from .entity import Entity
 

@@ -1,4 +1,5 @@
 import pygame as pg
+
 import os, random, math
 
 EVENTS: list[pg.Event] = []
@@ -52,3 +53,5 @@ class Timer:
         else:
             return False
 
+def out_back(time):
+    return 1 + 2.70158 * (time - 1) ** 3 + 1.70158 * (time - 1) ** 2
