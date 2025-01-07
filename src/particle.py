@@ -1,6 +1,7 @@
 import pygame as pg
 
 from dataclasses import dataclass
+
 from . import common, assets
 
 # I swear this isn't stolen ;]
@@ -9,10 +10,11 @@ from . import common, assets
 class Particle:
     pos: pg.Vector2
     velocity: pg.Vector2
-    angle: int
+    angle: float
     time: float
 
-class ParticleManager:
+
+class ParticleProccess:
     def __init__(self, spritesheet: assets.SpriteSheet) -> None:
         self.spritesheet = spritesheet
         self.particles: list[Particle] = []
@@ -23,6 +25,14 @@ class ParticleManager:
             particle.time -= common.DT
         self.particles = [particle for particle in self.particles if particle.time >= 0]
 
-    def spawn(self, pos, velocity: pg.Vector2, time: int, angle: int = 0, amount: int = 1):
+    def spawn(self, pos, velocity: pg.Vector2, time: int, angle: float = 0, amount: int = 1):
         for _ in range(amount):
             self.particles.append(Particle(pos = pos, velocity = velocity, angle = angle, time = time))
+
+
+class ParticleManager:
+    def __init__(self) -> None:
+        self.proccesses: list[ParticleProccess] = []
+
+    def update(self, *args, **kwargs):
+        pass

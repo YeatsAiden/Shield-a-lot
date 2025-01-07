@@ -1,6 +1,7 @@
 import pygame as pg
 
 import math
+
 from .entity import Entity
 from . import common, settings
 
@@ -9,6 +10,8 @@ class Player(Entity):
         super().__init__(image, pos)
         self.image = image
         self.rect = self.image.get_frect(center=pos)
+
+        self.health = 3
 
         self.direction = pg.Vector2(0, 0)
         self.velocity = pg.Vector2(0, 0) 

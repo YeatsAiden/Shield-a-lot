@@ -1,5 +1,7 @@
 import pygame as pg
-import random, math
+
+import random
+
 from .state import State
 from .. import assets
 from ..entity import Entity, Group

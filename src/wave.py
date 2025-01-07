@@ -1,6 +1,7 @@
 import pygame as pg
 
 import random
+
 from .entity import Entity, Group
 from . import common, assets, settings
 
@@ -34,6 +35,7 @@ class Projectile(Entity):
         pass
 
     def suicide(self):
+        # I dare you to tell me another way to do this
         for group in self.group:
             group.remove(self)
 
@@ -168,8 +170,6 @@ class Rocket(Projectile):
         super().__init__(image, pos, angle)
         self.speed = 60
         self.velocity = pg.Vector2(0, 0)
-
-        self.is_hit = False
 
     def move(self):
         self.velocity.x, self.velocity.y = 0, 0 

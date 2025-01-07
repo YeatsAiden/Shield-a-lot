@@ -1,27 +1,27 @@
 { "frames": {
    "0": {
-    "frame": { "x": 0, "y": 0, "w": 8, "h": 8 },
+    "frame": { "x": 0, "y": 0, "w": 4, "h": 4 },
     "rotated": false,
     "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 8, "h": 8 },
-    "sourceSize": { "w": 8, "h": 8 },
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 4, "h": 4 },
+    "sourceSize": { "w": 4, "h": 4 },
     "duration": 100
    },
    "1": {
-    "frame": { "x": 8, "y": 0, "w": 8, "h": 8 },
+    "frame": { "x": 4, "y": 0, "w": 4, "h": 4 },
     "rotated": false,
     "trimmed": false,
-    "spriteSourceSize": { "x": 0, "y": 0, "w": 8, "h": 8 },
-    "sourceSize": { "w": 8, "h": 8 },
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 4, "h": 4 },
+    "sourceSize": { "w": 4, "h": 4 },
     "duration": 100
    }
  },
  "meta": {
   "app": "http://www.aseprite.org/",
   "version": "1.3.10.1-x64",
-  "image": "sawblade.png",
+  "image": "smoke.png",
   "format": "RGBA8888",
-  "size": { "w": 16, "h": 8 },
+  "size": { "w": 8, "h": 4 },
   "scale": "1",
   "frameTags": [
   ],

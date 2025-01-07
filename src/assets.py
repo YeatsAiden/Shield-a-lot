@@ -1,6 +1,7 @@
 import pygame as pg
 
 import json
+
 from . import common
 
 images = {}
@@ -67,12 +68,16 @@ def load_assets():
             "bar": load_image("bar"),
             "charge": load_image("charge"),
             "player": load_image("player"),
+            "heart": load_image("heart"),
             "shield": load_image("shield"),
             "spike": load_image("spike"),
             "large_banana": load_image("large_banana"),
             "small_banana": load_image("small_banana"),
             "boomerang": load_image("boomerang"),
             "button": SpriteSheet("button"),
+            "smoke": SpriteSheet("smoke"),
+            "spark": SpriteSheet("spark"),
+            "fire": SpriteSheet("fire"),
             "rocket": SpriteSheet("rocket"),
             "sawblade": SpriteSheet("sawblade"),
             "grass": SpriteSheet("grass"),
