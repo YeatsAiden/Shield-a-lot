@@ -3,13 +3,13 @@ import pygame as pg
 import sys
 
 from .states import MainMenu
-from . import display, settings, common, assets
+from . import settings, common, assets
 
 
 class StateManager:
     def __init__(self) -> None:
         self.window = pg.display.set_mode(settings.WINDOW_SIZE, common.FLAGS) 
-        self.display = display.Display(settings.DISPLAY_SIZE, self.window)
+        self.display = pg.Surface(settings.DISPLAY_SIZE)
         self.clock = pg.Clock()
 
         assets.load_assets()
@@ -29,8 +29,8 @@ class StateManager:
         while True:
             # Global vars
             common.EVENTS = pg.event.get()
-            common.SCALE = min(self.window.height / self.display.display.height, self.window.width / self.display.display.height)
-            common.TO_CENTRE = pg.Vector2((self.window.width - self.display.display.width * common.SCALE) / 2, (self.window.height - self.display.display.height * common.SCALE) / 2)
+            common.SCALE = min(self.window.height / self.display.height, self.window.width / self.display.height)
+            common.TO_CENTRE = pg.Vector2((self.window.width - self.display.width * common.SCALE) / 2, (self.window.height - self.display.height * common.SCALE) / 2)
             x, y = pg.mouse.get_pos()
             common.MOUSE_POSITION = [(x - common.TO_CENTRE.x) / common.SCALE, (y - common.TO_CENTRE.y) / common.SCALE]
 
@@ -38,7 +38,7 @@ class StateManager:
             self.update()
             self.swap_state()
             self.event_loop()
-            pg.display.update((common.TO_CENTRE.x, common.TO_CENTRE.y, self.display.display.width * common.SCALE, self.display.display.height * common.SCALE))
+            pg.display.update((common.TO_CENTRE.x, common.TO_CENTRE.y, self.display.width * common.SCALE, self.display.height * common.SCALE))
             common.DT = self.clock.tick(common.FPS)/1000
 
     def event_loop(self):

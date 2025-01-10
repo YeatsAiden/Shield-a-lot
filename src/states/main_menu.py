@@ -1,14 +1,14 @@
 import pygame as pg
+
+from .. import assets, common
 from .state import State
 from .game import Game
-from .. import assets
-from ..ui import Button 
 from ..entity import Group
-from ..display import Display
+from ..ui import Button 
 
 
 class MainMenu(State):
-    def __init__(self, window: pg.Surface, display: Display, previous_state = None) -> None:
+    def __init__(self, window: pg.Surface, display: pg.Surface, previous_state = None) -> None:
         super().__init__(window, display, previous_state)
         self.window = window
         self.display = display
@@ -16,21 +16,19 @@ class MainMenu(State):
         self.play = Button(
                 assets.images["button"],
                 (21, 21),
-                lambda: setattr(self, "next_state", Game)
+                lambda: setattr(self, "next_state", Game),
+                assets.images["button_spritesheet"]
             )
         self.quit = Button(
                 assets.images["button"],
                 (21, 42),
-                lambda: setattr(self, "done", True)
+                lambda: setattr(self, "done", True),
+                assets.images["button_spritesheet"]
             )
 
         self.buttons = Group() 
         self.buttons.add(self.play)
         self.buttons.add(self.quit)
-
-        # Entities
-        self.all_entities = Group()
-        self.all_entities.add(self.buttons)
 
         # Colors
         self.bg_color = pg.Color(16, 20, 31)
@@ -43,7 +41,10 @@ class MainMenu(State):
 
     def update(self):
         self.window.fill("black")
-        self.display.display.fill(self.bg_color)
+        self.display.fill(self.bg_color)
+
         self.buttons.update()
-        self.display.add(self.all_entities)
-        self.display.update()
+
+        display_copy = pg.transform.scale(self.display, (self.display.width * common.SCALE, self.display.height * common.SCALE))
+        self.buttons.draw(display_copy)
+        self.window.blit(display_copy, (common.TO_CENTRE.x, common.TO_CENTRE.y))

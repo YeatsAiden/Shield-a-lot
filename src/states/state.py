@@ -1,10 +1,9 @@
 import pygame as pg
-import sys
-from ..display import Display
 
+from .. import common
 
 class State:
-    def __init__(self, window: pg.Surface, display: Display, previous_state = None, show_cursor: bool = False) -> None:
+    def __init__(self, window: pg.Surface, display: pg.Surface, previous_state = None, show_cursor: bool = False) -> None:
         self.previous_state = previous_state
         self.window = window
         self.display = display
@@ -22,3 +21,4 @@ class State:
 
     def update(self, *args, **kwargs):
         pass
+

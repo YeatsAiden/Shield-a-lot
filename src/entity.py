@@ -1,17 +1,15 @@
 import pygame as pg
 
-from . import assets
+from . import assets, common
 
 
 class Entity:
-    def __init__(self, image: pg.Surface | assets.SpriteSheet, pos, angle: float = 0, flags: int = 0) -> None:
-        if isinstance(image, assets.SpriteSheet):
-            self.sprite_sheet = image
-            self.image = image.images[f"{image.index}"]
-            self.original_image = self.image
-        else:
-            self.image = image
-            self.original_image = self.image
+    def __init__(self, image: pg.Surface,  pos, spritesheet: assets.SpriteSheet | None = None, angle: float = 0, flags: int = 0) -> None:
+        self.image = image
+        self.original_image = image
+
+        if spritesheet:
+            self.spritesheet = spritesheet
 
         self.mask: pg.Mask = pg.mask.from_surface(self.image)
 
@@ -63,3 +61,9 @@ class Group:
     def remove(self, entity: "Entity"):
         entity.group.remove(self)
         self.entities.remove(entity)
+
+    def draw(self, surface: pg.Surface):
+        for entity in self.entities:
+            image, rect = common.rotate(entity.image, entity.angle, common.SCALE, (entity.pos[0] * common.SCALE, entity.pos[1] * common.SCALE), pg.Vector2(0, 0))
+            entity.mask = pg.mask.from_surface(image)
+            surface.blit(image, rect)

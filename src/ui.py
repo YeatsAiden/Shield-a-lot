@@ -1,15 +1,16 @@
 import pygame as pg
 
 import typing
+
 from .entity import Entity
-from . import common
+from . import common, assets
 
 
 class Button(Entity):
     command: typing.Callable = staticmethod(lambda: None)
 
-    def __init__(self, image, pos, command: typing.Callable) -> None:
-        super().__init__(image, pos)
+    def __init__(self, image: pg.Surface, pos, command: typing.Callable, spritesheet: assets.SpriteSheet | None = None, angle: float = 0, flags: int = 0) -> None:
+        super().__init__(image, pos, spritesheet, angle, flags)
         self.rect = self.image.get_frect(center=pos)
 
         self.command: typing.Callable = command
@@ -28,11 +29,11 @@ class Button(Entity):
                 self.command()
         
         if self.focused:
-            self.image = self.sprite_sheet.get_image(1)
+            self.image = self.spritesheet.get_image(1)
         else:
-            self.image = self.sprite_sheet.get_image(0)
+            self.image = self.spritesheet.get_image(0)
         if self.clicked:
-            self.image = self.sprite_sheet.get_image(2)
+            self.image = self.spritesheet.get_image(2)
 
 
 class Font:

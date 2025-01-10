@@ -7,14 +7,12 @@ from . import common, assets, settings
 
 
 class Projectile(Entity):
-    def __init__(self, image: pg.Surface, pos, angle: float = 0, flags: int = 0) -> None:
-        super().__init__(image, pos, angle, flags)
+    def __init__(self, image: pg.Surface, pos, spritesheet: assets.SpriteSheet | None = None, angle: float = 0, flags: int = 0) -> None:
+        super().__init__(image, pos, spritesheet, angle, flags)
         self.is_hit = False
         self.entered_arena = False
-        self.speed: int
-        self.velocity: pg.Vector2
 
-    def update(self, *args, **kwargs):
+    def update(self):
         self.move()
         self.animate()
         self.entrance_check()
@@ -41,8 +39,8 @@ class Projectile(Entity):
 
 
 class Arrow(Projectile):
-    def __init__(self, image: pg.Surface, pos, angle: float = 0) -> None:
-        super().__init__(image, pos, angle)
+    def __init__(self, image: pg.Surface, pos, spritesheet: assets.SpriteSheet | None = None, angle: float = 0, flags: int = 0) -> None:
+        super().__init__(image, pos, spritesheet, angle, flags)
         self.speed = 40
         self.velocity = pg.Vector2(0, 0)
 
@@ -62,8 +60,8 @@ class Arrow(Projectile):
 
 
 class Boomerang(Projectile):
-    def __init__(self, image: pg.Surface, pos, angle: float = 0) -> None:
-        super().__init__(image, pos, angle)
+    def __init__(self, image: pg.Surface, pos, spritesheet: assets.SpriteSheet | None = None, angle: float = 0, flags: int = 0) -> None:
+        super().__init__(image, pos, spritesheet, angle, flags)
         self.speed = 30
         self.velocity = pg.Vector2(0, 0)
 
@@ -83,8 +81,8 @@ class Boomerang(Projectile):
 
 
 class SmallBanana(Projectile):
-    def __init__(self, image: pg.Surface, pos, angle: float = 0) -> None:
-        super().__init__(image, pos, angle)
+    def __init__(self, image: pg.Surface, pos, spritesheet: assets.SpriteSheet | None = None, angle: float = 0, flags: int = 0) -> None:
+        super().__init__(image, pos, spritesheet, angle, flags)
         self.speed = 30
         self.velocity = pg.Vector2(0, 0)
 
@@ -104,8 +102,8 @@ class SmallBanana(Projectile):
 
 
 class LargeBanana(Projectile):
-    def __init__(self, image: pg.Surface, pos, angle: float = 0) -> None:
-        super().__init__(image, pos, angle)
+    def __init__(self, image: pg.Surface, pos, spritesheet: assets.SpriteSheet | None = None, angle: float = 0, flags: int = 0) -> None:
+        super().__init__(image, pos, spritesheet, angle, flags)
         self.speed = 30
         self.velocity = pg.Vector2(0, 0)
 
@@ -125,8 +123,8 @@ class LargeBanana(Projectile):
 
 
 class Spike(Projectile):
-    def __init__(self, image: pg.Surface, pos, angle: float = 0) -> None:
-        super().__init__(image, pos, angle)
+    def __init__(self, image: pg.Surface, pos, spritesheet: assets.SpriteSheet | None = None, angle: float = 0, flags: int = 0) -> None:
+        super().__init__(image, pos, spritesheet, angle, flags)
         self.speed = 30
         self.velocity = pg.Vector2(0, 0)
 
@@ -145,8 +143,8 @@ class Spike(Projectile):
             self.angle += 180
 
 class SawBlade(Projectile):
-    def __init__(self, image: pg.Surface, pos, angle: float = 0) -> None:
-        super().__init__(image, pos, angle)
+    def __init__(self, image: pg.Surface, pos, spritesheet: assets.SpriteSheet | None = None, angle: float = 0, flags: int = 0) -> None:
+        super().__init__(image, pos, spritesheet, angle, flags)
         self.speed = 60
         self.velocity = pg.Vector2(0, 0)
 
@@ -166,8 +164,8 @@ class SawBlade(Projectile):
 
 
 class Rocket(Projectile):
-    def __init__(self, image: pg.Surface, pos, angle: float = 0) -> None:
-        super().__init__(image, pos, angle)
+    def __init__(self, image: pg.Surface, pos, spritesheet: assets.SpriteSheet | None = None, angle: float = 0, flags: int = 0) -> None:
+        super().__init__(image, pos, spritesheet, angle, flags)
         self.speed = 60
         self.velocity = pg.Vector2(0, 0)
 
@@ -179,7 +177,7 @@ class Rocket(Projectile):
         self.pos = self.rect.center
 
     def animate(self):
-        self.image = self.sprite_sheet.next_frame()
+        self.image = self.spritesheet.next_frame()
 
     def hit(self):
         if not self.is_hit:
@@ -212,7 +210,7 @@ class WaveManager(Group):
         self.projectile_types = self.current_sub_wave["types"]
         self.amount = self.current_sub_wave["amount"]
 
-    def update(self, *args, **kwargs):
+    def update(self, **kwargs):
         player_pos = kwargs["player_pos"]
         shield_rect = kwargs["shield_rect"]
         shield_mask = kwargs["shield_mask"]
@@ -249,7 +247,8 @@ class WaveManager(Group):
 
     def decide_projectile(self, pos, angle):
         projectile_type = random.choice(self.projectile_types)
-        return self.projectiles[projectile_type](assets.images[projectile_type], pos, angle)
+        spritesheet = assets.images[projectile_type + "_spritesheet"] if projectile_type + "_spritesheet" in assets.images else None
+        return self.projectiles[projectile_type](assets.images[projectile_type], pos, spritesheet, angle)
 
     def spawn_projectiles(self, player_pos):
         for _ in range(self.amount):
