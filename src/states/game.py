@@ -2,8 +2,8 @@ import pygame as pg
 
 import random
 
-from .state import State
 from .. import assets, common
+from .state import State
 from ..entity import Entity, Group
 from ..player import Player
 from ..shield import Shield 
@@ -26,25 +26,21 @@ class Game(State):
         self.wave = WaveManager()
 
         # All entities
-        self.enities = Group()
+        self.entities = Group()
         
-        for _ in range(random.randint(3, 5)):
-            self.enities.add(Entity(assets.images["grass_spritesheet"].images[f"{random.randint(0, 2)}"], (random.randint(10, 54), random.randint(10, 54))))
-
-        self.enities.add(self.player)
-        self.enities.add(self.shield)
-        self.enities.add(self.charge_bar)
+        self.entities.add(*[Entity(assets.images["grass_spritesheet"].images[f"{random.randint(0, 2)}"], (random.randint(10, 54), random.randint(10, 54))) for _ in range(random.randint(3, 5))])
+        self.entities.add(self.player, self.shield, self.charge_bar)
 
     def update(self):
         self.window.fill(common.bg_color)
         self.display.fill(common.bg_color)
 
-        self.enities.update(player_pos= self.player.pos, charge= self.shield.charge)
+        self.entities.update(player_pos= self.player.pos, charge= self.shield.charge)
         self.wave.update(player_pos= self.player.pos, shield_rect= self.shield.rect, shield_mask= self.shield.mask, swinging= self.shield.swing,)
 
         display_copy = pg.transform.scale(self.display, (self.display.width * common.SCALE, self.display.height * common.SCALE))
 
-        self.enities.draw(display_copy)
         self.wave.draw(display_copy)
+        self.entities.draw(display_copy)
 
         self.window.blit(display_copy, (common.TO_CENTRE.x, common.TO_CENTRE.y))

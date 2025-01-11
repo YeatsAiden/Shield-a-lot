@@ -3,7 +3,7 @@ import pygame as pg
 import random
 
 from .entity import Entity, Group
-from . import common, assets, settings
+from . import common, assets, settings, particle
 
 
 class Projectile(Entity):

@@ -25,6 +25,11 @@ class Entity:
     def update(self, *args, **kwargs):
         pass
 
+    def draw(self, surface: pg.Surface):
+        image, rect = common.rotate(self.image, self.angle, common.SCALE, (self.pos[0] * common.SCALE, self.pos[1] * common.SCALE), pg.Vector2(0, 0))
+        self.mask = pg.mask.from_surface(image)
+        surface.blit(image, rect)
+
     def add_outline(self, condition: bool, color):
         if condition and not self.outline:
             self.outline = True
@@ -50,13 +55,14 @@ class Group:
         for entities in self.entities:
             entities.update(*args, **kwargs)
 
-    def add(self, entity: "Entity | Group"):
-        if isinstance(entity, Group):
-            self.entities.extend(entity.entities)
-            [e.group.append(self) for e in entity.entities]
-        else:
-            self.entities.append(entity)
-            entity.group.append(self)
+    def add(self, *args):
+        for entity in args: 
+            if isinstance(entity, Group):
+                self.entities.extend(entity.entities)
+                [e.group.append(self) for e in entity.entities]
+            else:
+                self.entities.append(entity)
+                entity.group.append(self)
 
     def remove(self, entity: "Entity"):
         entity.group.remove(self)
@@ -64,6 +70,4 @@ class Group:
 
     def draw(self, surface: pg.Surface):
         for entity in self.entities:
-            image, rect = common.rotate(entity.image, entity.angle, common.SCALE, (entity.pos[0] * common.SCALE, entity.pos[1] * common.SCALE), pg.Vector2(0, 0))
-            entity.mask = pg.mask.from_surface(image)
-            surface.blit(image, rect)
+            entity.draw(surface)

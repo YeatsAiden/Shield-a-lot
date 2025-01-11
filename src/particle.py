@@ -28,11 +28,3 @@ class ParticleProccess:
     def spawn(self, pos, velocity: pg.Vector2, time: int, angle: float = 0, amount: int = 1):
         for _ in range(amount):
             self.particles.append(Particle(pos = pos, velocity = velocity, angle = angle, time = time))
-
-
-class ParticleManager:
-    def __init__(self) -> None:
-        self.proccesses: list[ParticleProccess] = []
-
-    def update(self, *args, **kwargs):
-        pass

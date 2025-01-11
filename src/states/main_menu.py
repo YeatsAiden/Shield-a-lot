@@ -27,11 +27,7 @@ class MainMenu(State):
             )
 
         self.buttons = Group() 
-        self.buttons.add(self.play)
-        self.buttons.add(self.quit)
-
-        # Colors
-        self.bg_color = pg.Color(16, 20, 31)
+        self.buttons.add(self.play, self.quit)
 
     def exit_state(self):
         pass
@@ -40,8 +36,8 @@ class MainMenu(State):
         pass
 
     def update(self):
-        self.window.fill("black")
-        self.display.fill(self.bg_color)
+        self.window.fill(common.bg_color)
+        self.display.fill(common.bg_color)
 
         self.buttons.update()
 
