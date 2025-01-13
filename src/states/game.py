@@ -40,6 +40,7 @@ class Game(State):
 
         display_copy = pg.transform.scale(self.display, (self.display.width * common.SCALE, self.display.height * common.SCALE))
 
+        self.wave.draw_particles(display_copy)
         self.wave.draw(display_copy)
         self.entities.draw(display_copy)
 

@@ -12,6 +12,8 @@ class Projectile(Entity):
         self.is_hit = False
         self.entered_arena = False
 
+        self.layer = 2
+
     def update(self):
         self.move()
         self.animate()
@@ -210,6 +212,8 @@ class WaveManager(Group):
         self.projectile_types = self.current_sub_wave["types"]
         self.amount = self.current_sub_wave["amount"]
 
+        self.particles: list[particle.ParticleProccess] = []
+
     def update(self, **kwargs):
         player_pos = kwargs["player_pos"]
         shield_rect = kwargs["shield_rect"]
@@ -234,8 +238,12 @@ class WaveManager(Group):
 
         for projectile in self.entities:
             projectile.update()
+
             if projectile.mask.overlap(shield_mask, ((shield_rect.x - projectile.rect.left) * common.SCALE, (shield_rect.y - projectile.rect.top) * common.SCALE)) and swinging:
                 projectile.hit()
+
+        for process in self.particles:
+            process.update()
 
     def tick(self):
         if not len(self.entities):
@@ -255,6 +263,10 @@ class WaveManager(Group):
             random_position = common.generate_random_position_out_of_area(settings.DISPLAY_SIZE, random.randint(20, 300))
             angle_to_player = common.angle_to(random_position, player_pos) + random.randint(-self.angle_deviation, self.angle_deviation)
             projectile = self.decide_projectile(random_position, angle_to_player)
+
+            if isinstance(projectile, Rocket):
+                self.particles.append(particle.Fire(assets.images["fire_spritesheet"], projectile))
+
             self.add(projectile)
 
     def next_sub_wave(self):
@@ -267,4 +279,8 @@ class WaveManager(Group):
         self.current_wave = assets.data[f"wave_{self.wave_id}"]
         self.angle_deviation = self.current_wave["angle_deviation"]
         self.next_sub_wave()
+
+    def draw_particles(self, surface):
+        for process in self.particles:
+            process.draw(surface)
 

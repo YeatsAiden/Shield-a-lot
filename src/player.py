@@ -12,6 +12,7 @@ class Player(Entity):
         self.rect = self.image.get_frect(center=pos)
 
         self.health = 3
+        self.layer = 1
 
         self.direction = pg.Vector2(0, 0)
         self.velocity = pg.Vector2(0, 0) 

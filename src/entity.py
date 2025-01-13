@@ -4,6 +4,7 @@ from . import assets, common
 
 
 class Entity:
+    layer = 0
     def __init__(self, image: pg.Surface,  pos, spritesheet: assets.SpriteSheet | None = None, angle: float = 0, flags: int = 0) -> None:
         self.image = image
         self.original_image = image

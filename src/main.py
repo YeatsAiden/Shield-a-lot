@@ -46,4 +46,3 @@ class StateManager:
             if event.type == pg.QUIT:
                 pg.quit()
                 sys.exit()
-
