@@ -6,13 +6,12 @@ from .entity import Entity
 from . import common, settings
 
 class Player(Entity):
-    def __init__(self, image: pg.Surface, pos) -> None:
-        super().__init__(image, pos)
+    def __init__(self, image: pg.Surface, pos, angle: float = 0) -> None:
+        super().__init__(image, pos, angle)
         self.image = image
         self.rect = self.image.get_frect(center=pos)
 
         self.health = 3
-        self.layer = 1
 
         self.direction = pg.Vector2(0, 0)
         self.velocity = pg.Vector2(0, 0) 

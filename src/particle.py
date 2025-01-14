@@ -28,9 +28,6 @@ class ParticleProccess:
         self.done = False
 
     def update(self, *args, **kwargs):
-        if not self.entity:
-            self.done = True
-
         for particle in self.particles:
             particle.pos += particle.velocity * common.DT
 
@@ -48,7 +45,6 @@ class ParticleProccess:
     def draw(self, surface: pg.Surface):
         for particle in self.particles:
             image, rect = common.rotate(self.spritesheet.get_image(particle.image_index), particle.angle, common.SCALE, (particle.pos[0] * common.SCALE, particle.pos[1] * common.SCALE), pg.Vector2(0, 0))
-            self.mask = pg.mask.from_surface(image)
             surface.blit(image, rect)
 
 
@@ -57,8 +53,13 @@ class Fire(ParticleProccess):
         super().__init__(spritesheet, entity)
 
     def update(self, *args, **kwargs):
+        if self.entity.dead:
+            self.done = True
+
         if not self.done:
-            self.spawn(self.entity.pos, pg.Vector2(1, 0), [random.randint(0, 1), random.randint(0, 1), random.randint(1, 2)], self.entity.angle, random.randint(0, 1))
+            random_vec = pg.Vector2(0, random.randint(-2, 2)).rotate(-self.entity.angle)
+            random_pos = [self.entity.pos[0] + random_vec.x, self.entity.pos[1] + random_vec.y] 
+            self.spawn(random_pos, pg.Vector2(1, 0), [random.randint(0, 1), random.randint(0, 1), random.randint(1, 2)], self.entity.angle, random.randint(0, 1))
 
         return super().update(*args, **kwargs)
 

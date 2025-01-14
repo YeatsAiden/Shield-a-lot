@@ -24,7 +24,6 @@ class Shield(Entity):
 
         self.swing = False
         self.frame = 0
-        self.layer = 3
 
         self.charge = 0
 

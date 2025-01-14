@@ -11,8 +11,7 @@ class Projectile(Entity):
         super().__init__(image, pos, spritesheet, angle, flags)
         self.is_hit = False
         self.entered_arena = False
-
-        self.layer = 2
+        self.dead = False
 
     def update(self):
         self.move()
@@ -38,6 +37,8 @@ class Projectile(Entity):
         # I dare you to tell me another way to do this
         for group in self.group:
             group.remove(self)
+
+        self.dead = True
 
 
 class Arrow(Projectile):
