@@ -266,7 +266,7 @@ class WaveManager(Group):
             projectile = self.decide_projectile(random_position, angle_to_player)
 
             if isinstance(projectile, Rocket):
-                self.particles.append(particle.Fire(assets.images["fire_spritesheet"], projectile))
+                self.particles.append(particle.Trail(assets.images["smoke_spritesheet"], projectile))
 
             self.add(projectile)
 

@@ -48,18 +48,22 @@ class ParticleProccess:
             surface.blit(image, rect)
 
 
-class Fire(ParticleProccess):
+class Trail(ParticleProccess):
     def __init__(self, spritesheet: assets.SpriteSheet, entity: None | Entity = None) -> None:
         super().__init__(spritesheet, entity)
+        self.cooldown = 0.04
 
     def update(self, *args, **kwargs):
         if self.entity.dead:
             self.done = True
 
-        if not self.done:
-            random_vec = pg.Vector2(0, random.randint(-2, 2)).rotate(-self.entity.angle)
-            random_pos = [self.entity.pos[0] + random_vec.x, self.entity.pos[1] + random_vec.y] 
-            self.spawn(random_pos, pg.Vector2(1, 0), [random.randint(0, 1), random.randint(0, 1), random.randint(1, 2)], self.entity.angle, random.randint(0, 1))
+        self.cooldown -= common.DT
+        if not self.done and self.cooldown <= 0:
+            self.cooldown = 0.04
+            random_relative_pos = pg.Vector2(0, random.randint(-1, 1)).rotate(-self.entity.angle)
+            pos = [self.entity.pos[0] + random_relative_pos.x, self.entity.pos[1] + random_relative_pos.y] 
+            random_vec = pg.Vector2(10, 0).rotate(-self.entity.angle + random.randint(-15, 15) + 180)
+            self.spawn(pos, random_vec, [random.randint(0, 1), random.randint(1, 2)], self.entity.angle, random.randint(0, 1))
 
         return super().update(*args, **kwargs)
 
