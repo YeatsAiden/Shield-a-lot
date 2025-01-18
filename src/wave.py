@@ -33,8 +33,10 @@ class Projectile(Entity):
     def hit(self):
         pass
 
+    def reflect(self):
+        pass
+
     def suicide(self):
-        # I dare you to tell me another way to do this
         for group in self.group:
             group.remove(self)
 
@@ -46,8 +48,6 @@ class Arrow(Projectile):
         super().__init__(image, pos, spritesheet, angle, flags)
         self.speed = 40
         self.velocity = pg.Vector2(0, 0)
-
-        self.is_hit = False
 
     def move(self):
         self.velocity.x, self.velocity.y = 0, 0 
@@ -68,8 +68,6 @@ class Boomerang(Projectile):
         self.speed = 30
         self.velocity = pg.Vector2(0, 0)
 
-        self.is_hit = False
-
     def move(self):
         self.velocity.x, self.velocity.y = 0, 0 
         self.velocity.x += self.speed * common.DT
@@ -88,8 +86,6 @@ class SmallBanana(Projectile):
         super().__init__(image, pos, spritesheet, angle, flags)
         self.speed = 30
         self.velocity = pg.Vector2(0, 0)
-
-        self.is_hit = False
 
     def move(self):
         self.velocity.x, self.velocity.y = 0, 0 
@@ -110,8 +106,6 @@ class LargeBanana(Projectile):
         self.speed = 30
         self.velocity = pg.Vector2(0, 0)
 
-        self.is_hit = False
-
     def move(self):
         self.velocity.x, self.velocity.y = 0, 0 
         self.velocity.x += self.speed * common.DT
@@ -131,8 +125,6 @@ class Spike(Projectile):
         self.speed = 30
         self.velocity = pg.Vector2(0, 0)
 
-        self.is_hit = False
-
     def move(self):
         self.velocity.x, self.velocity.y = 0, 0 
         self.velocity.x += self.speed * common.DT
@@ -150,8 +142,7 @@ class SawBlade(Projectile):
         super().__init__(image, pos, spritesheet, angle, flags)
         self.speed = 60
         self.velocity = pg.Vector2(0, 0)
-
-        self.is_hit = False
+        self.explode = False
 
     def move(self):
         self.velocity.x, self.velocity.y = 0, 0 
@@ -213,16 +204,17 @@ class WaveManager(Group):
         self.projectile_types = self.current_sub_wave["types"]
         self.amount = self.current_sub_wave["amount"]
 
-        self.particles: list[particle.ParticleProccess] = []
+        self.particles: list[particle.ParticleProcess | particle.ProcessManager] = []
 
     def update(self, **kwargs):
-        player_pos = kwargs["player_pos"]
+        player = kwargs["player"]
         shield_rect = kwargs["shield_rect"]
         shield_mask = kwargs["shield_mask"]
         swinging = kwargs["swinging"]
 
+        # Wave related shinanigans
         if self.tick():
-            self.spawn_projectiles(player_pos)
+            self.spawn_projectiles(player.pos)
             
             if self.sub_wave_index < len(self.current_wave["sub_waves"]) - 1:
                 self.sub_wave_index += 1
@@ -237,14 +229,20 @@ class WaveManager(Group):
                     self.wave_id = 0
                     self.next_wave()
 
+        # entities update + particle update
         for projectile in self.entities:
             projectile.update()
 
-            if projectile.mask.overlap(shield_mask, ((shield_rect.x - projectile.rect.left) * common.SCALE, (shield_rect.y - projectile.rect.top) * common.SCALE)) and swinging:
+            if projectile.mask.overlap(player.mask, (player.mask_rect.x - projectile.mask_rect.x, player.mask_rect.y - projectile.mask_rect.y)):
                 projectile.hit()
+            # if projectile.mask.overlap(shield_mask, ((shield_rect.x - projectile.rect.x) * common.SCALE, (shield_rect.y - projectile.rect.y) * common.SCALE)) and swinging:
+            #     projectile.hit()
 
         for process in self.particles:
             process.update()
+
+            if process.check_done():
+                self.particles.remove(process)
 
     def tick(self):
         if not len(self.entities):
@@ -266,7 +264,8 @@ class WaveManager(Group):
             projectile = self.decide_projectile(random_position, angle_to_player)
 
             if isinstance(projectile, Rocket):
-                self.particles.append(particle.Trail(assets.images["smoke_spritesheet"], projectile))
+                trail = particle.Trail(assets.images["smoke_spritesheet"], projectile)
+                self.particles.append(trail)
 
             self.add(projectile)
 

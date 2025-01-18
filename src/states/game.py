@@ -5,7 +5,7 @@ import random
 from .. import assets, common
 from .state import State
 from ..entity import Entity, Group
-from ..player import Player
+from ..player import Health, Player
 from ..shield import Shield 
 from ..bar import Bar
 from ..wave import WaveManager
@@ -18,7 +18,8 @@ class Game(State):
         self.display = display
 
         # Class initialization
-        self.player = Player(assets.images["player"], (display.width//2, display.height//2))
+        self.health = Health(assets.images["heart"], [54, 4])
+        self.player = Player(assets.images["player"], (display.width//2, display.height//2), self.health)
         self.shield = Shield(assets.images["shield"], self.player.rect.center)
 
         self.charge_bar = Bar(assets.images["bar"], assets.images["charge"], [8, 4])
@@ -29,14 +30,14 @@ class Game(State):
         self.entities = Group()
         
         self.entities.add(*[Entity(assets.images["grass_spritesheet"].images[f"{random.randint(0, 2)}"], (random.randint(10, 54), random.randint(10, 54))) for _ in range(random.randint(3, 5))])
-        self.entities.add(self.player, self.shield, self.charge_bar)
+        self.entities.add(self.player, self.shield, self.charge_bar, self.health)
 
     def update(self):
         self.window.fill(common.bg_color)
         self.display.fill(common.bg_color)
 
-        self.entities.update(player_pos= self.player.pos, charge= self.shield.charge)
-        self.wave.update(player_pos= self.player.pos, shield_rect= self.shield.rect, shield_mask= self.shield.mask, swinging= self.shield.swing,)
+        self.entities.update(player_pos=self.player.pos, charge=self.shield.charge)
+        self.wave.update(player=self.player, shield_rect=self.shield.rect, shield_mask=self.shield.mask, swinging=self.shield.swing,)
 
         display_copy = pg.transform.scale(self.display, (self.display.width * common.SCALE, self.display.height * common.SCALE))
 

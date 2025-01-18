@@ -3,15 +3,36 @@ import pygame as pg
 import math
 
 from .entity import Entity
-from . import common, settings
+from . import common, settings, assets
+
+
+class Health(Entity):
+    def __init__(self, image: pg.Surface, pos, spritesheet: assets.SpriteSheet | None = None, angle: float = 0, flags: int = 0) -> None:
+        super().__init__(image, pos, spritesheet, angle, flags)
+        self.lives = 3
+        self.image = pg.Surface((self.original_image.width * self.lives + 3, self.original_image.height))
+        self.image.set_colorkey("black")
+        for life in range(self.lives):
+            self.image.blit(self.original_image, (life * self.original_image.width + life, 0))
+
+    def lose_health(self):
+        self.lives -= 1
+        if self.lives >= 0:
+            self.update_image()
+
+    def update_image(self):
+        self.image = pg.Surface((self.original_image.width * self.lives + 3, self.original_image.height))
+        for life in range(self.lives):
+            self.image.blit(self.original_image, (life * self.original_image.width + life, 0))
+
 
 class Player(Entity):
-    def __init__(self, image: pg.Surface, pos, angle: float = 0) -> None:
-        super().__init__(image, pos, angle)
+    def __init__(self, image: pg.Surface, pos, health: Health) -> None:
+        super().__init__(image, pos)
         self.image = image
         self.rect = self.image.get_frect(center=pos)
 
-        self.health = 3
+        self.health = health
 
         self.direction = pg.Vector2(0, 0)
         self.velocity = pg.Vector2(0, 0) 
@@ -73,4 +94,3 @@ class Player(Entity):
         keys = pg.key.get_pressed()
         self.direction.x = (keys[pg.K_d] or keys[pg.K_RIGHT]) - (keys[pg.K_a] or keys[pg.K_LEFT])
         self.direction.y = (keys[pg.K_s] or keys[pg.K_DOWN]) - (keys[pg.K_w] or keys[pg.K_UP])
-

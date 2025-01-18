@@ -1,9 +1,9 @@
 {
   "sub_waves": [
     {
-      "types": ["arrow"],
-      "spawn_clock": 3,
-      "amount": 2
+      "types": ["arrow", "rocket"],
+      "spawn_clock": 1,
+      "amount": 5
     },
     {
       "types": ["rocket"],

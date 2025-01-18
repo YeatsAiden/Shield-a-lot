@@ -12,10 +12,11 @@ class Entity:
         if spritesheet:
             self.spritesheet = spritesheet
 
-        self.mask: pg.Mask = pg.mask.from_surface(self.image)
-
         self.pos = pos
         self.rect: pg.FRect | pg.Rect = self.image.get_frect(center = self.pos)
+
+        self.mask: pg.Mask = pg.mask.from_surface(self.image)
+        self.mask_rect = self.rect
 
         self.angle = angle
         self.flags = flags
@@ -68,4 +69,5 @@ class Group:
         for entity in self.entities:
             image, rect = common.rotate(entity.image, entity.angle, common.SCALE, (entity.pos[0] * common.SCALE, entity.pos[1] * common.SCALE), pg.Vector2(0, 0))
             entity.mask = pg.mask.from_surface(image)
+            entity.mask_rect = rect
             surface.blit(image, rect)

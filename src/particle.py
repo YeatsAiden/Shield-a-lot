@@ -17,7 +17,7 @@ class Particle:
     image_index: int = 0
 
 
-class ParticleProccess:
+class ParticleProcess:
     def __init__(self, spritesheet: assets.SpriteSheet, entity: None | Entity = None) -> None:
         self.spritesheet = spritesheet
 
@@ -25,9 +25,13 @@ class ParticleProccess:
             self.entity = entity 
 
         self.particles: list[Particle] = []
+        self.started = False
         self.done = False
 
     def update(self, *args, **kwargs):
+        if len(self.particles):
+            self.started = True
+
         for particle in self.particles:
             particle.pos += particle.velocity * common.DT
 
@@ -42,13 +46,45 @@ class ParticleProccess:
         for _ in range(amount):
             self.particles.append(Particle(pos = pos, velocity = velocity, angle = angle, durations= durations))
 
+    def check_done(self):
+        return not len(self.particles) and self.done and self.started
+
     def draw(self, surface: pg.Surface):
         for particle in self.particles:
             image, rect = common.rotate(self.spritesheet.get_image(particle.image_index), particle.angle, common.SCALE, (particle.pos[0] * common.SCALE, particle.pos[1] * common.SCALE), pg.Vector2(0, 0))
             surface.blit(image, rect)
 
 
-class Trail(ParticleProccess):
+class ProcessManager:
+    def __init__(self) -> None:
+        self.processes: list["ParticleProcess"] = []
+
+    def update(self, *args, **kwargs):
+        for process in self.processes:
+            process.update(*args, **kwargs)
+
+    def add(self, *args):
+        for process in args: 
+            if isinstance(process, ProcessManager):
+                self.processes.extend(process.processes)
+            else:
+                self.processes.append(process)
+
+    def remove(self, process: "ParticleProcess"):
+        self.processes.remove(process)
+
+    def draw(self, surface: pg.Surface):
+        for process in self.processes:
+            process.draw(surface)
+
+    def check_done(self):
+        for process in self.processes:
+            if len(process.particles) or not process.done or not process.started:
+                return False
+        return True
+
+
+class Trail(ParticleProcess):
     def __init__(self, spritesheet: assets.SpriteSheet, entity: None | Entity = None) -> None:
         super().__init__(spritesheet, entity)
         self.cooldown = 0.04
@@ -60,10 +96,24 @@ class Trail(ParticleProccess):
         self.cooldown -= common.DT
         if not self.done and self.cooldown <= 0:
             self.cooldown = 0.04
-            random_relative_pos = pg.Vector2(0, random.randint(-1, 1)).rotate(-self.entity.angle)
-            pos = [self.entity.pos[0] + random_relative_pos.x, self.entity.pos[1] + random_relative_pos.y] 
-            random_vec = pg.Vector2(10, 0).rotate(-self.entity.angle + random.randint(-15, 15) + 180)
-            self.spawn(pos, random_vec, [random.randint(0, 1), random.randint(1, 2)], self.entity.angle, random.randint(0, 1))
+            for _ in range(random.randint(0, 2)):
+                random_relative_pos = pg.Vector2(0, random.randint(-1, 1)).rotate(-self.entity.angle)
+                pos = [self.entity.pos[0] + random_relative_pos.x, self.entity.pos[1] + random_relative_pos.y] 
+                random_vec = pg.Vector2(random.randint(5, 10), 0).rotate(-self.entity.angle + random.randint(-15, 15) + 180)
+                self.spawn(pos, random_vec, [random.random(), random.random()], 0)
 
+        return super().update(*args, **kwargs)
+
+
+class Flash(ParticleProcess):
+    def __init__(self, spritesheet: assets.SpriteSheet, entity: None | Entity = None) -> None:
+        super().__init__(spritesheet, entity)
+
+
+class Explosion(ProcessManager):
+    def __init__(self) -> None:
+        super().__init__()
+
+    def update(self, *args, **kwargs):
         return super().update(*args, **kwargs)
 
