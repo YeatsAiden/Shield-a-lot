@@ -9,11 +9,12 @@ class Entity:
         self.image = image
         self.original_image = image
 
+        self.pos = pos
+        self.rect = self.image.get_frect(center=self.pos)
+
         if spritesheet:
             self.spritesheet = spritesheet
-
-        self.pos = pos
-        self.rect: pg.FRect | pg.Rect = self.image.get_frect(center = self.pos)
+            self.rect = self.spritesheet.get_image(0).get_frect(center=self.pos)
 
         self.mask: pg.Mask = pg.mask.from_surface(self.image)
         self.mask_rect = self.rect
@@ -71,3 +72,4 @@ class Group:
             entity.mask = pg.mask.from_surface(image)
             entity.mask_rect = rect
             surface.blit(image, rect)
+            pg.draw.rect(surface, "red", entity.rect)

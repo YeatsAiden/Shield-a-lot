@@ -208,8 +208,7 @@ class WaveManager(Group):
 
     def update(self, **kwargs):
         player = kwargs["player"]
-        shield_rect = kwargs["shield_rect"]
-        shield_mask = kwargs["shield_mask"]
+        shield = kwargs["shield"]
         swinging = kwargs["swinging"]
 
         # Wave related shinanigans
@@ -233,10 +232,8 @@ class WaveManager(Group):
         for projectile in self.entities:
             projectile.update()
 
-            if projectile.mask.overlap(player.mask, (player.mask_rect.x - projectile.mask_rect.x, player.mask_rect.y - projectile.mask_rect.y)):
+            if projectile.mask.overlap(shield.mask, (shield.mask_rect.x - projectile.mask_rect.x, shield.mask_rect.y - projectile.mask_rect.y)) and swinging:
                 projectile.hit()
-            # if projectile.mask.overlap(shield_mask, ((shield_rect.x - projectile.rect.x) * common.SCALE, (shield_rect.y - projectile.rect.y) * common.SCALE)) and swinging:
-            #     projectile.hit()
 
         for process in self.particles:
             process.update()

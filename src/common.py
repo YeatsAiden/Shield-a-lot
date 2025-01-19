@@ -22,7 +22,7 @@ def rotate(surface: pg.Surface, angle: float, size: float, pivot, offset):
     scaled_image = pg.transform.scale(surface, (surface.width * size, surface.height * size))
     rotated_image = pg.transform.rotate(scaled_image, angle)
     rotated_offset = offset.rotate(-angle)
-    rect = rotated_image.get_rect(center=pivot+rotated_offset)
+    rect = rotated_image.get_frect(center=pivot+rotated_offset)
     return rotated_image, rect
 
 def generate_random_position_out_of_area(area: list[int], offset: int):

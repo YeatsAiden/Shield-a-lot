@@ -37,7 +37,7 @@ class Game(State):
         self.display.fill(common.bg_color)
 
         self.entities.update(player_pos=self.player.pos, charge=self.shield.charge)
-        self.wave.update(player=self.player, shield_rect=self.shield.rect, shield_mask=self.shield.mask, swinging=self.shield.swing,)
+        self.wave.update(player=self.player, shield=self.shield, swinging=self.shield.swing,)
 
         display_copy = pg.transform.scale(self.display, (self.display.width * common.SCALE, self.display.height * common.SCALE))
 
