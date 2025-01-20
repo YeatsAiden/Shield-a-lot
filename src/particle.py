@@ -108,12 +108,21 @@ class Trail(ParticleProcess):
 class Flash(ParticleProcess):
     def __init__(self, spritesheet: assets.SpriteSheet, entity: None | Entity = None) -> None:
         super().__init__(spritesheet, entity)
-
-
-class Explosion(ProcessManager):
-    def __init__(self) -> None:
-        super().__init__()
+        self.cooldown = random.gauss(0, 1) 
+        self.times = 1
 
     def update(self, *args, **kwargs):
-        return super().update(*args, **kwargs)
+        if self.times == 0:
+            self.done = True
 
+        self.cooldown -= common.DT
+        if self.entity.dead and self.cooldown <= 0 and not self.done:
+            self.cooldown = random.gauss(0, 1) 
+            self.times -= 1
+            for _ in range(random.randint(5, 10)):
+                random_relative_pos = pg.Vector2(random.gauss(0, 6), random.gauss(0, 6))
+                pos = [self.entity.pos[0] + random_relative_pos.x, self.entity.pos[1] + random_relative_pos.y] 
+                random_vec = pg.Vector2(random.randint(1, 5), 0).rotate(-common.angle_to(self.entity.pos, pos))
+                self.spawn(pos, random_vec, [random.gauss(1/3, 1/2), random.gauss(1/2, 1/2), random.gauss(1/3, 1/2)], 0)
+
+        return super().update(*args, **kwargs)

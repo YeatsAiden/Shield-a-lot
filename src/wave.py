@@ -25,6 +25,7 @@ class Projectile(Entity):
         pass
 
     def entrance_check(self):
+        # if 0 < self.pos[0] < settings.DISPLAY_SIZE[0] and 0 < self.pos[1] < settings.DISPLAY_SIZE[1]:
         if -50 < self.pos[0] < settings.DISPLAY_SIZE[0] + 50 and -50 < self.pos[1] < settings.DISPLAY_SIZE[1] + 50:
             self.entered_arena = True
         elif self.entered_arena:
@@ -34,7 +35,9 @@ class Projectile(Entity):
         pass
 
     def reflect(self):
-        pass
+        if not self.is_hit:
+            self.is_hit = True
+            self.angle += 180
 
     def suicide(self):
         for group in self.group:
@@ -56,11 +59,6 @@ class Arrow(Projectile):
         self.rect.topleft += rotated_velocity
         self.pos = self.rect.center
 
-    def hit(self):
-        if not self.is_hit:
-            self.is_hit = True
-            self.angle += 180
-
 
 class Boomerang(Projectile):
     def __init__(self, image: pg.Surface, pos, spritesheet: assets.SpriteSheet | None = None, angle: float = 0, flags: int = 0) -> None:
@@ -74,11 +72,6 @@ class Boomerang(Projectile):
         rotated_velocity =  self.velocity.rotate(-self.angle)
         self.rect.topleft += rotated_velocity
         self.pos = self.rect.center
-
-    def hit(self):
-        if not self.is_hit:
-            self.is_hit = True
-            self.angle += 180
 
 
 class SmallBanana(Projectile):
@@ -94,11 +87,6 @@ class SmallBanana(Projectile):
         self.rect.topleft += rotated_velocity
         self.pos = self.rect.center
 
-    def hit(self):
-        if not self.is_hit:
-            self.is_hit = True
-            self.angle += 180
-
 
 class LargeBanana(Projectile):
     def __init__(self, image: pg.Surface, pos, spritesheet: assets.SpriteSheet | None = None, angle: float = 0, flags: int = 0) -> None:
@@ -112,11 +100,6 @@ class LargeBanana(Projectile):
         rotated_velocity =  self.velocity.rotate(-self.angle)
         self.rect.topleft += rotated_velocity
         self.pos = self.rect.center
-
-    def hit(self):
-        if not self.is_hit:
-            self.is_hit = True
-            self.angle += 180
 
 
 class Spike(Projectile):
@@ -132,10 +115,6 @@ class Spike(Projectile):
         self.rect.topleft += rotated_velocity
         self.pos = self.rect.center
 
-    def hit(self):
-        if not self.is_hit:
-            self.is_hit = True
-            self.angle += 180
 
 class SawBlade(Projectile):
     def __init__(self, image: pg.Surface, pos, spritesheet: assets.SpriteSheet | None = None, angle: float = 0, flags: int = 0) -> None:
@@ -150,11 +129,6 @@ class SawBlade(Projectile):
         rotated_velocity =  self.velocity.rotate(-self.angle)
         self.rect.topleft += rotated_velocity
         self.pos = self.rect.center
-
-    def hit(self):
-        if not self.is_hit:
-            self.is_hit = True
-            self.angle += 180
 
 
 class Rocket(Projectile):
@@ -174,9 +148,7 @@ class Rocket(Projectile):
         self.image = self.spritesheet.next_frame()
 
     def hit(self):
-        if not self.is_hit:
-            self.is_hit = True
-            self.angle += 180
+        self.suicide()
 
 
 class WaveManager(Group):
@@ -233,6 +205,8 @@ class WaveManager(Group):
             projectile.update()
 
             if projectile.mask.overlap(shield.mask, (shield.mask_rect.x - projectile.mask_rect.x, shield.mask_rect.y - projectile.mask_rect.y)) and swinging:
+                projectile.reflect()
+            if projectile.mask.overlap(player.mask, (player.mask_rect.x - projectile.mask_rect.x, player.mask_rect.y - projectile.mask_rect.y)):
                 projectile.hit()
 
         for process in self.particles:
@@ -262,7 +236,9 @@ class WaveManager(Group):
 
             if isinstance(projectile, Rocket):
                 trail = particle.Trail(assets.images["smoke_spritesheet"], projectile)
-                self.particles.append(trail)
+                flash = particle.Flash(assets.images["flash_spritesheet"], projectile)
+                alt_flash = particle.Flash(assets.images["alt_flash_spritesheet"], projectile)
+                self.particles.extend([trail, flash, alt_flash])
 
             self.add(projectile)
 

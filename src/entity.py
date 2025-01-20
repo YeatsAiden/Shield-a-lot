@@ -72,4 +72,3 @@ class Group:
             entity.mask = pg.mask.from_surface(image)
             entity.mask_rect = rect
             surface.blit(image, rect)
-            pg.draw.rect(surface, "red", entity.rect)
