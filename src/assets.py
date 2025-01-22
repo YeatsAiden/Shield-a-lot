@@ -86,6 +86,7 @@ def load_assets():
             "smoke_spritesheet": SpriteSheet("smoke"),
             "alt_flash_spritesheet": SpriteSheet("alt_flash"),
             "flash_spritesheet": SpriteSheet("flash"),
+            "shockwave_spritesheet": SpriteSheet("shockwave"),
             "rocket_spritesheet": SpriteSheet("rocket"),
             "sawblade_spritesheet": SpriteSheet("sawblade"),
             "grass_spritesheet": SpriteSheet("grass"),

@@ -56,35 +56,6 @@ class ParticleProcess:
             surface.blit(image, rect)
 
 
-# class ProcessManager:
-#     def __init__(self) -> None:
-#         self.processes: list["ParticleProcess"] = []
-#
-#     def update(self, *args, **kwargs):
-#         for process in self.processes:
-#             process.update(*args, **kwargs)
-#
-#     def add(self, *args):
-#         for process in args: 
-#             if isinstance(process, ProcessManager):
-#                 self.processes.extend(process.processes)
-#             else:
-#                 self.processes.append(process)
-#
-#     def remove(self, process: "ParticleProcess"):
-#         self.processes.remove(process)
-#
-#     def draw(self, surface: pg.Surface):
-#         for process in self.processes:
-#             process.draw(surface)
-#
-#     def check_done(self):
-#         for process in self.processes:
-#             if len(process.particles) or not process.done or not process.started:
-#                 return False
-#         return True
-
-
 class Trail(ParticleProcess):
     def __init__(self, spritesheet: assets.SpriteSheet, entity: None | Entity = None) -> None:
         super().__init__(spritesheet, entity)
@@ -123,23 +94,14 @@ class Flash(ParticleProcess):
 
 
 class ShockWave(ParticleProcess):
-    def __init__(self, entity: None | Entity = None) -> None:
-        super().__init__(entity=entity)
+    def __init__(self, spritesheet: assets.SpriteSheet | None = None, entity: None | Entity = None) -> None:
+        super().__init__(spritesheet, entity)
 
     def update(self, *args, **kwargs):
         if self.entity.dead and not self.done and self.entity.explode:
             pos = self.entity.pos 
             random_vec = pg.Vector2(0, 0)
-            self.spawn(pos, random_vec, [1], 0)
+            self.spawn(pos, random_vec, [0.02 for _ in range(12)], 0)
             self.done = True
 
         return super().update(*args, **kwargs)
-
-    def draw(self, surface: pg.Surface):
-        for particle in self.particles:
-            particle_image = pg.Surface((200, 200))
-            particle_image.set_colorkey("black")
-            pg.draw.circle(particle_image, (165, 48, 48), (particle_image.width/2, particle_image.height/2), 50 - particle.durations[particle.image_index] * 50, 2)
-            image, rect = common.rotate(particle_image, particle.angle, common.SCALE, (particle.pos[0] * common.SCALE, particle.pos[1] * common.SCALE), pg.Vector2(0, 0))
-            surface.blit(image, rect)
-

@@ -7,7 +7,7 @@ MOUSE_POSITION: list[int]
 SCALE: float = 0
 TO_CENTRE: pg.Vector2
 FLAGS = pg.RESIZABLE
-FPS: int = 30
+FPS: int = 360
 DT: float = 0
 WORKING_DIRECTORY = os.path.dirname(os.path.realpath(__file__)).split("src")[0]
 

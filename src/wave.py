@@ -245,7 +245,7 @@ class WaveManager(Group):
                 trail = particle.Trail(assets.images["smoke_spritesheet"], projectile)
                 flash = particle.Flash(assets.images["flash_spritesheet"], projectile)
                 alt_flash = particle.Flash(assets.images["alt_flash_spritesheet"], projectile)
-                shock_wave = particle.ShockWave(projectile)
+                shock_wave = particle.ShockWave(assets.images["shockwave_spritesheet"], projectile)
                 self.particles.extend([trail, flash, alt_flash, shock_wave])
 
             self.add(projectile)
