@@ -18,8 +18,9 @@ class Particle:
 
 
 class ParticleProcess:
-    def __init__(self, spritesheet: assets.SpriteSheet, entity: None | Entity = None) -> None:
-        self.spritesheet = spritesheet
+    def __init__(self, spritesheet: assets.SpriteSheet | None = None, entity: None | Entity = None) -> None:
+        if spritesheet:
+            self.spritesheet = spritesheet
 
         if entity:
             self.entity = entity 
@@ -55,33 +56,33 @@ class ParticleProcess:
             surface.blit(image, rect)
 
 
-class ProcessManager:
-    def __init__(self) -> None:
-        self.processes: list["ParticleProcess"] = []
-
-    def update(self, *args, **kwargs):
-        for process in self.processes:
-            process.update(*args, **kwargs)
-
-    def add(self, *args):
-        for process in args: 
-            if isinstance(process, ProcessManager):
-                self.processes.extend(process.processes)
-            else:
-                self.processes.append(process)
-
-    def remove(self, process: "ParticleProcess"):
-        self.processes.remove(process)
-
-    def draw(self, surface: pg.Surface):
-        for process in self.processes:
-            process.draw(surface)
-
-    def check_done(self):
-        for process in self.processes:
-            if len(process.particles) or not process.done or not process.started:
-                return False
-        return True
+# class ProcessManager:
+#     def __init__(self) -> None:
+#         self.processes: list["ParticleProcess"] = []
+#
+#     def update(self, *args, **kwargs):
+#         for process in self.processes:
+#             process.update(*args, **kwargs)
+#
+#     def add(self, *args):
+#         for process in args: 
+#             if isinstance(process, ProcessManager):
+#                 self.processes.extend(process.processes)
+#             else:
+#                 self.processes.append(process)
+#
+#     def remove(self, process: "ParticleProcess"):
+#         self.processes.remove(process)
+#
+#     def draw(self, surface: pg.Surface):
+#         for process in self.processes:
+#             process.draw(surface)
+#
+#     def check_done(self):
+#         for process in self.processes:
+#             if len(process.particles) or not process.done or not process.started:
+#                 return False
+#         return True
 
 
 class Trail(ParticleProcess):
@@ -108,21 +109,37 @@ class Trail(ParticleProcess):
 class Flash(ParticleProcess):
     def __init__(self, spritesheet: assets.SpriteSheet, entity: None | Entity = None) -> None:
         super().__init__(spritesheet, entity)
-        self.cooldown = random.gauss(0, 1) 
-        self.times = 1
 
     def update(self, *args, **kwargs):
-        if self.times == 0:
-            self.done = True
-
-        self.cooldown -= common.DT
-        if self.entity.dead and self.cooldown <= 0 and not self.done:
-            self.cooldown = random.gauss(0, 1) 
-            self.times -= 1
+        if self.entity.dead and not self.done and self.entity.explode:
             for _ in range(random.randint(5, 10)):
                 random_relative_pos = pg.Vector2(random.gauss(0, 6), random.gauss(0, 6))
                 pos = [self.entity.pos[0] + random_relative_pos.x, self.entity.pos[1] + random_relative_pos.y] 
                 random_vec = pg.Vector2(random.randint(1, 5), 0).rotate(-common.angle_to(self.entity.pos, pos))
                 self.spawn(pos, random_vec, [random.gauss(1/3, 1/2), random.gauss(1/2, 1/2), random.gauss(1/3, 1/2)], 0)
+            self.done = True
 
         return super().update(*args, **kwargs)
+
+
+class ShockWave(ParticleProcess):
+    def __init__(self, entity: None | Entity = None) -> None:
+        super().__init__(entity=entity)
+
+    def update(self, *args, **kwargs):
+        if self.entity.dead and not self.done and self.entity.explode:
+            pos = self.entity.pos 
+            random_vec = pg.Vector2(0, 0)
+            self.spawn(pos, random_vec, [1], 0)
+            self.done = True
+
+        return super().update(*args, **kwargs)
+
+    def draw(self, surface: pg.Surface):
+        for particle in self.particles:
+            particle_image = pg.Surface((200, 200))
+            particle_image.set_colorkey("black")
+            pg.draw.circle(particle_image, (165, 48, 48), (particle_image.width/2, particle_image.height/2), 50 - particle.durations[particle.image_index] * 50, 2)
+            image, rect = common.rotate(particle_image, particle.angle, common.SCALE, (particle.pos[0] * common.SCALE, particle.pos[1] * common.SCALE), pg.Vector2(0, 0))
+            surface.blit(image, rect)
+

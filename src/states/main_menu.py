@@ -43,4 +43,4 @@ class MainMenu(State):
 
         display_copy = pg.transform.scale(self.display, (self.display.width * common.SCALE, self.display.height * common.SCALE))
         self.buttons.draw(display_copy)
-        self.window.blit(display_copy, (common.TO_CENTRE.x, common.TO_CENTRE.y))
+        self.window.blit(display_copy, common.TO_CENTRE)

@@ -2,6 +2,9 @@ import pygame as pg
 
 import random
 
+from .health import Health
+from .player import Player
+from .shield import Shield
 from .entity import Entity, Group
 from . import common, assets, settings, particle
 
@@ -32,7 +35,7 @@ class Projectile(Entity):
             self.suicide()
 
     def hit(self):
-        pass
+        self.suicide()
 
     def reflect(self):
         if not self.is_hit:
@@ -136,6 +139,7 @@ class Rocket(Projectile):
         super().__init__(image, pos, spritesheet, angle, flags)
         self.speed = 60
         self.velocity = pg.Vector2(0, 0)
+        self.explode = False
 
     def move(self):
         self.velocity.x, self.velocity.y = 0, 0 
@@ -149,6 +153,7 @@ class Rocket(Projectile):
 
     def hit(self):
         self.suicide()
+        self.explode = True
 
 
 class WaveManager(Group):
@@ -176,11 +181,12 @@ class WaveManager(Group):
         self.projectile_types = self.current_sub_wave["types"]
         self.amount = self.current_sub_wave["amount"]
 
-        self.particles: list[particle.ParticleProcess | particle.ProcessManager] = []
+        self.particles: list[particle.ParticleProcess] = []
 
     def update(self, **kwargs):
-        player = kwargs["player"]
-        shield = kwargs["shield"]
+        player: Player = kwargs["player"]
+        health: Health = kwargs["health"]
+        shield: Shield = kwargs["shield"]
         swinging = kwargs["swinging"]
 
         # Wave related shinanigans
@@ -208,6 +214,7 @@ class WaveManager(Group):
                 projectile.reflect()
             if projectile.mask.overlap(player.mask, (player.mask_rect.x - projectile.mask_rect.x, player.mask_rect.y - projectile.mask_rect.y)):
                 projectile.hit()
+                health.decrease_health()
 
         for process in self.particles:
             process.update()
@@ -238,7 +245,8 @@ class WaveManager(Group):
                 trail = particle.Trail(assets.images["smoke_spritesheet"], projectile)
                 flash = particle.Flash(assets.images["flash_spritesheet"], projectile)
                 alt_flash = particle.Flash(assets.images["alt_flash_spritesheet"], projectile)
-                self.particles.extend([trail, flash, alt_flash])
+                shock_wave = particle.ShockWave(projectile)
+                self.particles.extend([trail, flash, alt_flash, shock_wave])
 
             self.add(projectile)
 

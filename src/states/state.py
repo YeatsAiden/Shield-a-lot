@@ -1,6 +1,5 @@
 import pygame as pg
 
-from .. import common
 
 class State:
     def __init__(self, window: pg.Surface, display: pg.Surface, previous_state = None, show_cursor: bool = False) -> None:

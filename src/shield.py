@@ -37,7 +37,7 @@ class Shield(Entity):
         self.angle = common.angle_to(pos, common.MOUSE_POSITION)
         temp_rotated_vel = self.velocity.rotate(-self.angle)
         self.relative_position += temp_rotated_vel * common.DT
-        self.relative_position = self.relative_position.clamp_magnitude(self.min_radius, self.max_radius + math.sin(self.frame * 20) * 2000 * common.DT)
+        self.relative_position = self.relative_position.clamp_magnitude(self.min_radius, self.max_radius + math.sin(self.frame) * 200)
         self.rect.center = pos + self.relative_position
         self.pos = self.rect.center
 
@@ -55,12 +55,10 @@ class Shield(Entity):
         if mouse_pressed[0] and self.charge == 0:
             self.swing = True
 
-        ocillating_var = self.frame * 20
-
         if self.swing:
-            self.frame += common.DT
+            self.frame += common.DT * 20
 
-        if ocillating_var > math.pi:
+        if self.frame > math.pi:
             self.swing = False
             self.frame = 0
 

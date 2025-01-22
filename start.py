@@ -1,6 +1,5 @@
 import pygame as pg
 from src import main
-import os
 
 pg.init()
 

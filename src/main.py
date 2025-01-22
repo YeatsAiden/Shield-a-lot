@@ -3,7 +3,7 @@ import pygame as pg
 import sys
 
 from .states import MainMenu
-from . import settings, common, assets
+from . import settings, common, assets, ui
 
 
 class StateManager:
@@ -15,6 +15,8 @@ class StateManager:
         assets.load_assets()
 
         self.state = MainMenu(self.window, self.display)
+
+        self.fps = ui.Font(assets.images["smol_font"], [1, 2, 3], 1)
 
     def update(self):
         self.state.update() 
@@ -38,6 +40,7 @@ class StateManager:
             self.update()
             self.swap_state()
             self.event_loop()
+            self.fps.render(self.window, f"{self.clock.get_fps()}", 60, 10, 1, 1)
             pg.display.update((common.TO_CENTRE.x, common.TO_CENTRE.y, self.display.width * common.SCALE, self.display.height * common.SCALE))
             common.DT = self.clock.tick(common.FPS)/1000
 

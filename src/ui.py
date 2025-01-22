@@ -37,13 +37,13 @@ class Button(Entity):
 
 
 class Font:
-    def __init__(self, path: str, include: list[int], step: int) -> None:
+    def __init__(self, image: pg.Surface, include: list[int], step: int) -> None:
         self.characters = ["ABCDEFGHIJKLMNOPQRSTUVWXYZ", "abcdefghijklmnopqrstuvwxyz", "0123456789", "!@#$%^&*()`~-_=+\\|[]}{';:/?.>,<"]
 
-        self.font = self.load_font(path, include, step)
+        self.font = self.load_font(image, include, step)
     
-    def load_font(self, path: str, include: list[int], step: int):
-        font_img = pg.image.load(path).convert()
+    def load_font(self, image: pg.Surface, include: list[int], step: int):
+        font_img = image
         font_img.set_colorkey((0, 0, 0))
         
         characters = []

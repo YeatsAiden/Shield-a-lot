@@ -10,6 +10,9 @@ data = {}
 def load_image(path: str, extention: str = "png"):
     return pg.image.load(f"{common.WORKING_DIRECTORY}assets/images/{path}/{path}.{extention}")
 
+def load_font(path: str, extention: str = "png"):
+    return pg.image.load(f"{common.WORKING_DIRECTORY}assets/fonts/{path}.{extention}")
+
 def load_sound(path: str, extention: str = "wav"):
     return pg.image.load(f"{common.WORKING_DIRECTORY}assets/sfx/{path}.{extention}")
 
@@ -64,6 +67,7 @@ class SpriteSheet:
 def load_assets():
     images.update(
         {
+            "smol_font": load_font("smol_font"),
             "arrow": load_image("arrow"),
             "bar": load_image("bar"),
             "charge": load_image("charge"),
