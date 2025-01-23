@@ -4,7 +4,8 @@ import random
 
 from .. import assets, common
 from .state import State
-from ..entity import Entity, Group
+from ..entity import Entity
+from ..group import Group
 from ..player import Player
 from ..health import Health
 from ..shield import Shield 

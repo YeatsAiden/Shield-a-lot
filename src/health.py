@@ -4,8 +4,8 @@ from . import assets, common
 from .entity import Entity
 
 class Health(Entity):
-    def __init__(self, image: pg.Surface, pos, spritesheet: assets.SpriteSheet | None = None, angle: float = 0, flags: int = 0) -> None:
-        super().__init__(image, pos, spritesheet, angle, flags)
+    def __init__(self, image: pg.Surface, pos, spritesheet: assets.SpriteSheet | None = None, angle: float = 0) -> None:
+        super().__init__(image, pos, spritesheet, angle)
         self.lives = 3
         self.dead = False
         self.cooldown = 1

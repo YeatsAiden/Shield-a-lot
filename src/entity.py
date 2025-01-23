@@ -5,7 +5,7 @@ from . import assets, common
 
 class Entity:
     layer = 0
-    def __init__(self, image: pg.Surface,  pos, spritesheet: assets.SpriteSheet | None = None, angle: float = 0, flags: int = 0) -> None:
+    def __init__(self, image: pg.Surface,  pos, spritesheet: assets.SpriteSheet | None = None, angle: float = 0) -> None:
         self.image = image
         self.original_image = image
 
@@ -20,13 +20,16 @@ class Entity:
         self.mask_rect = self.rect
 
         self.angle = angle
-        self.flags = flags
         self.outline = False
-
-        self.group: list["Group"] = []
 
     def update(self, *args, **kwargs):
         pass
+
+    def draw(self, surface: pg.Surface):
+        image, rect = common.rotate(self.image, self.angle, common.SCALE, (self.pos[0] * common.SCALE, self.pos[1] * common.SCALE), pg.Vector2(0, 0))
+        self.mask = pg.mask.from_surface(image)
+        self.mask_rect = rect
+        surface.blit(image, rect)
 
     def add_outline(self, condition: bool, color):
         if condition and not self.outline:
@@ -43,32 +46,3 @@ class Entity:
         elif not condition:
             self.outline = False
             self.image = self.original_image
-
-
-class Group:
-    def __init__(self) -> None:
-        self.entities: list["Entity"] = []
-
-    def update(self, *args, **kwargs):
-        for entities in self.entities:
-            entities.update(*args, **kwargs)
-
-    def add(self, *args):
-        for entity in args: 
-            if isinstance(entity, Group):
-                self.entities.extend(entity.entities)
-                [e.group.append(self) for e in entity.entities]
-            else:
-                self.entities.append(entity)
-                entity.group.append(self)
-
-    def remove(self, entity: "Entity"):
-        entity.group.remove(self)
-        self.entities.remove(entity)
-
-    def draw(self, surface: pg.Surface):
-        for entity in self.entities:
-            image, rect = common.rotate(entity.image, entity.angle, common.SCALE, (entity.pos[0] * common.SCALE, entity.pos[1] * common.SCALE), pg.Vector2(0, 0))
-            entity.mask = pg.mask.from_surface(image)
-            entity.mask_rect = rect
-            surface.blit(image, rect)

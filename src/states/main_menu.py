@@ -3,7 +3,7 @@ import pygame as pg
 from .. import assets, common
 from .state import State
 from .game import Game
-from ..entity import Group
+from ..group import Group
 from ..ui import Button 
 
 

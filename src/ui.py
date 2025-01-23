@@ -9,8 +9,8 @@ from . import common, assets
 class Button(Entity):
     command: typing.Callable = staticmethod(lambda: None)
 
-    def __init__(self, image: pg.Surface, pos, command: typing.Callable, spritesheet: assets.SpriteSheet | None = None, angle: float = 0, flags: int = 0) -> None:
-        super().__init__(image, pos, spritesheet, angle, flags)
+    def __init__(self, image: pg.Surface, pos, command: typing.Callable, spritesheet: assets.SpriteSheet | None = None, angle: float = 0) -> None:
+        super().__init__(image, pos, spritesheet, angle)
         self.rect = self.image.get_frect(center=pos)
 
         self.command: typing.Callable = command

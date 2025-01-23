@@ -18,14 +18,13 @@ class Particle:
 
 
 class ParticleProcess:
+    layer = 0
     def __init__(self, spritesheet: assets.SpriteSheet | None = None, entity: None | Entity = None) -> None:
-        if spritesheet:
-            self.spritesheet = spritesheet
-
-        if entity:
-            self.entity = entity 
+        self.spritesheet = spritesheet
+        self.entity = entity 
 
         self.particles: list[Particle] = []
+
         self.started = False
         self.done = False
 
@@ -57,7 +56,7 @@ class ParticleProcess:
 
 
 class Trail(ParticleProcess):
-    def __init__(self, spritesheet: assets.SpriteSheet, entity: None | Entity = None) -> None:
+    def __init__(self, spritesheet: assets.SpriteSheet | None = None, entity: None | Entity = None) -> None:
         super().__init__(spritesheet, entity)
         self.cooldown = 0.04
 
@@ -78,7 +77,7 @@ class Trail(ParticleProcess):
 
 
 class Flash(ParticleProcess):
-    def __init__(self, spritesheet: assets.SpriteSheet, entity: None | Entity = None) -> None:
+    def __init__(self, spritesheet: assets.SpriteSheet | None = None, entity: None | Entity = None) -> None:
         super().__init__(spritesheet, entity)
 
     def update(self, *args, **kwargs):
@@ -101,7 +100,7 @@ class ShockWave(ParticleProcess):
         if self.entity.dead and not self.done and self.entity.explode:
             pos = self.entity.pos 
             random_vec = pg.Vector2(0, 0)
-            self.spawn(pos, random_vec, [0.02 for _ in range(12)], 0)
+            self.spawn(pos, random_vec, [*[0.001 for _ in range(10)], 0.05, 0.05, 0.1], 0)
             self.done = True
 
         return super().update(*args, **kwargs)
